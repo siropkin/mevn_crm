@@ -1,27 +1,27 @@
 /**
 * @swagger
 * tags:
-*   - name: providers
-*     description: Access to Providers
+*   - name: clients
+*     description: Access to Clients
 * paths:
-*   /providers:
+*   /clients:
 *       get:
 *           tags:
-*               - providers
-*           summary: Get all Providers
+*               - clients
+*           summary: Get all Clients
 *           produces:
 *               - application/json
 *           responses:
 *               '200':
 *                   description: successful operation
 *                   schema:
-*                       $ref: '#/definitions/Providers'
+*                       $ref: '#/definitions/Clients'
 *               '500':
 *                   description: error using this operation
 *       post:
 *           tags:
-*               - providers
-*           summary: Create Provider
+*               - clients
+*           summary: Create Client
 *           consumes:
 *               - application/json
 *           produces:
@@ -29,59 +29,59 @@
 *           parameters:
 *               - in: body
 *                 name: body
-*                 description: Provider object that needs to be added
+*                 description: Client object that needs to be added
 *                 required: true
 *                 schema:
-*                   $ref: "#/definitions/Provider"
+*                   $ref: "#/definitions/Client"
 *           responses:
 *               '201':
 *                   description: successful operation
 *               '500':
 *                   description: error using this operation
-*   /providers/{providerId}:
+*   /clients/{clientId}:
 *       get:
 *           tags:
-*               - providers
-*           summary: Get Provider by ID
+*               - clients
+*           summary: Get Client by ID
 *           consumes:
 *               - application/json
 *           produces:
 *               - application/json
 *           parameters:
 *               - in: path
-*                 name: providerId
-*                 description: ID of provider to return
+*                 name: clientId
+*                 description: ID of client to return
 *                 required: true
 *                 type: string
 *           responses:
 *               '200':
 *                   description: successful operation
 *                   schema:
-*                       $ref: '#/definitions/Provider'
+*                       $ref: '#/definitions/Client'
 *               '404':
 *                   description: item with this ID not found
 *               '500':
 *                   description: error using this operation
 *       patch:
 *           tags:
-*               - providers
-*           summary: Update Provider by ID
+*               - clients
+*           summary: Update Client by ID
 *           consumes:
 *               - application/json
 *           produces:
 *               - application/json
 *           parameters:
 *               - in: path
-*                 name: providerId
-*                 description: ID of provider to update
+*                 name: clientId
+*                 description: ID of client to update
 *                 required: true
 *                 type: string
 *               - in: body
 *                 name: body
-*                 description: Provider object properties that needs to be updated
+*                 description: Client object properties that needs to be updated
 *                 required: true
 *                 schema:
-*                   $ref: "#/definitions/Provider"
+*                   $ref: "#/definitions/Client"
 *           responses:
 *               '200':
 *                   description: successful operation
@@ -91,16 +91,16 @@
 *                   description: error using this operation
 *       delete:
 *           tags:
-*               - providers
-*           summary: Delete Provider by ID
+*               - clients
+*           summary: Delete Client by ID
 *           consumes:
 *               - application/json
 *           produces:
 *               - application/json
 *           parameters:
 *               - in: path
-*                 name: providerId
-*                 description: ID of provider to delete
+*                 name: clientId
+*                 description: ID of client to delete
 *                 required: true
 *                 type: string
 *           responses:
@@ -111,7 +111,7 @@
 *               '500':
 *                   description: error using this operation
 * definitions:
-*   Provider:
+*   Client:
 *       type: object
 *       properties:
 *           _id:
@@ -119,15 +119,23 @@
 *               readOnly: true
 *           name:
 *               type: string
-*       required:
-*           - name               
-*   Providers:
-*       type: object
-*       properties:
+*           email:
+*               type: string
+*           phone:
+*               type: integer
 *           providers:
 *               type: array
 *               items:
-*                   $ref: '#/definitions/Provider'
+*                   type: string
+*       required:
+*           - name               
+*   Clients:
+*       type: object
+*       properties:
+*           clients:
+*               type: array
+*               items:
+*                   $ref: '#/definitions/Client'
 */
 
 const express = require("express");
