@@ -211,6 +211,7 @@ router.patch("/:providerId", async (req, res, next) => {
 
 // Delete Provider by ID
 router.delete("/:providerId", async (req, res, next) => {
+    // TODO: Update info in Clients objects when Provider is deleted
     const id = req.params.providerId;
     await Provider.deleteOne({ _id: id })
         .exec()
