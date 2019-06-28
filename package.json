@@ -1,0 +1,25 @@
+{
+  "name": "fullstack_vue_express",
+  "version": "1.0.0",
+  "description": "Full stack vue and express app",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "nodemon server/app.js"
+  },
+  "author": "Artem Zubkov",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^3.2.7",
+    "mongoose": "^5.6.1",
+    "mongoose-type-email": "^1.0.11",
+    "swagger-jsdoc": "^3.2.9",
+    "swagger-ui-express": "^4.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}

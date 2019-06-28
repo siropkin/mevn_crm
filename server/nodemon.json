@@ -1,0 +1,7 @@
+{
+    "env": {
+        "APP_PORT": 6000,
+        "MONGO_USR": "app_user",
+        "MONGO_PW": "Qwerty123"
+    }
+}
