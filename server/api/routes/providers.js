@@ -18,6 +18,8 @@
 *                       $ref: '#/definitions/Providers'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *       post:
 *           tags:
 *               - providers
@@ -35,9 +37,13 @@
 *                   $ref: "#/definitions/Provider"
 *           responses:
 *               '201':
-*                   description: successful operation
+*                   description: successful operation (in responses will be ID of new object)
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *   /providers/{providerId}:
 *       get:
 *           tags:
@@ -60,8 +66,12 @@
 *                       $ref: '#/definitions/Provider'
 *               '404':
 *                   description: item with this ID not found
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *       patch:
 *           tags:
 *               - providers
@@ -85,10 +95,16 @@
 *           responses:
 *               '200':
 *                   description: successful operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '404':
 *                   description: item with this ID not found
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *       delete:
 *           tags:
 *               - providers
@@ -106,10 +122,16 @@
 *           responses:
 *               '200':
 *                   description: successful operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '404':
 *                   description: item with this ID not found
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 * definitions:
 *   Provider:
 *       type: object
@@ -127,7 +149,12 @@
 *           providers:
 *               type: array
 *               items:
-*                   $ref: '#/definitions/Provider'
+*                   $ref: '#/definitions/Provider'      
+*   ApiResponse:
+*       type: object
+*       properties:
+*           message:
+*               type: string
 */
 
 const express = require("express");
@@ -145,7 +172,7 @@ router.get("/", async (req, res, next) => {
             res.status(200).json({ providers: result });
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -158,10 +185,11 @@ router.post("/", async (req, res, next) => {
     await provider
         .save()
         .then(result => {
-            res.status(201).json({ message: `Provider is created with ID ${result._id}` });
+            //res.status(201).json({ message: `Provider is created with ID ${result._id}` });
+            res.status(201).json({ message: result._id });
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -179,7 +207,7 @@ router.get("/:providerId", async (req, res, next) => {
             }
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -205,7 +233,7 @@ router.patch("/:providerId", async (req, res, next) => {
             }            
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -223,7 +251,7 @@ router.delete("/:providerId", async (req, res, next) => {
             }
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 

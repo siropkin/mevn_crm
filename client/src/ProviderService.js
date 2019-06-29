@@ -10,7 +10,8 @@ class ProviderService {
                 const res = await axios.get(url);
                 const data = res.data;
                 resolve(data.providers.map(provider => ({
-                    ...provider,
+                    _id: provider._id,
+                    name: provider.name,
                     readonly: true
                 })));
             } catch(err) {
@@ -21,8 +22,19 @@ class ProviderService {
 
     // Create Provider
     static createProvider(name) {
+        /*
         return axios.post(url, {
             name
+        });
+        */
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await axios.post(url, { name });
+                const data = res.data;
+                resolve(data);
+            } catch(err) {
+                reject(err);
+            }
         });
     }
 

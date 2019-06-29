@@ -18,6 +18,8 @@
 *                       $ref: '#/definitions/Clients'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *       post:
 *           tags:
 *               - clients
@@ -35,9 +37,13 @@
 *                   $ref: "#/definitions/Client"
 *           responses:
 *               '201':
-*                   description: successful operation
+*                   description: successful operation (in responses will be ID of new object)
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *   /clients/{clientId}:
 *       get:
 *           tags:
@@ -60,8 +66,12 @@
 *                       $ref: '#/definitions/Client'
 *               '404':
 *                   description: item with this ID not found
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *       patch:
 *           tags:
 *               - clients
@@ -85,10 +95,16 @@
 *           responses:
 *               '200':
 *                   description: successful operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '404':
 *                   description: item with this ID not found
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *       delete:
 *           tags:
 *               - clients
@@ -106,10 +122,16 @@
 *           responses:
 *               '200':
 *                   description: successful operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '404':
 *                   description: item with this ID not found
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 *               '500':
 *                   description: error using this operation
+*                   schema:
+*                       $ref: '#/definitions/ApiResponse'
 * definitions:
 *   Client:
 *       type: object
@@ -136,6 +158,11 @@
 *               type: array
 *               items:
 *                   $ref: '#/definitions/Client'
+*   ApiResponse:
+*       type: object
+*       properties:
+*           message:
+*               type: string
 */
 
 const express = require("express");
@@ -154,7 +181,7 @@ router.get("/", async (req, res, next) => {
             res.status(200).json(result);
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -162,21 +189,21 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
     // TODO: Optimize provider find code
     // TODO: Catch if there is equals providerId
-    const message = [];
+    const errors = [];
     for (const provider of req.body.providers) {
         const id = provider._id;
         await Provider.findById(id)
             .then(provider => {
                 if (!provider) {
-                    message.push(`Provider with ID ${id} not found`);
+                    errors.push(`Provider with ID ${id} not found`);
                 }
             })
             .catch(err => {
-                message = err;
+                errors.push(err.message);
             });
     }
-    if (message.length > 0) {
-        return res.status(404).json({ message: JSON.stringify(message) });
+    if (errors.length > 0) {
+        return res.status(404).json({ message: JSON.stringify(errors) });
     }
     const client = new Client({
         _id: new mongoose.Types.ObjectId(),
@@ -188,10 +215,11 @@ router.post("/", async (req, res, next) => {
     await client
         .save()
         .then(result => {
-            res.status(201).json({ message: `Client is created with ID ${result._id}` });
+            //res.status(201).json({ message: `Client is created with ID ${result._id}` });
+            res.status(201).json({ message: result._id });
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -209,7 +237,7 @@ router.get("/:clientId", async (req, res, next) => {
             }
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -240,7 +268,7 @@ router.patch("/:clientId", async (req, res, next) => {
             } 
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
@@ -257,7 +285,7 @@ router.delete("/:clientId", async (req, res, next) => {
             }
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: err.message });
         });
 });
 
