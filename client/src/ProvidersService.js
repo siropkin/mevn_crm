@@ -2,18 +2,14 @@ import axios from 'axios';
 
 const url = 'http://localhost:5000/api/providers/';
 
-class ProviderService {
+class ProvidersService {
     // Get all Providers
     static getProviders() {
         return new Promise(async (resolve, reject) => {
             try {
                 const res = await axios.get(url);
                 const data = res.data;
-                resolve(data.providers.map(provider => ({
-                    _id: provider._id,
-                    name: provider.name,
-                    readonly: true
-                })));
+                resolve(data.providers);
             } catch(err) {
                 reject(err);
             }
@@ -22,11 +18,6 @@ class ProviderService {
 
     // Create Provider
     static createProvider(name) {
-        /*
-        return axios.post(url, {
-            name
-        });
-        */
         return new Promise(async (resolve, reject) => {
             try {
                 const res = await axios.post(url, { name });
@@ -53,9 +44,7 @@ class ProviderService {
 
     // Update Provider by ID
     static updateProvider(id, name) {
-        return axios.patch(`${url}${id}`, {
-            name
-        });
+        return axios.patch(`${url}${id}`, { name });
     }
 
     // Delete Provider by ID
@@ -64,4 +53,4 @@ class ProviderService {
     }
 }
 
-export default ProviderService;
+export default ProvidersService;
