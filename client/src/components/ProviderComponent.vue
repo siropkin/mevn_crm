@@ -26,74 +26,39 @@
 </template>
 
 <script>
-import ProviderService from '../ProviderService';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'ProviderComponent',
-  data() {
-    return {
-      providers: [],
-      error: '',
-      newProviderName: ''
+  computed: {
+    ...mapGetters({
+      providers: 'providers',
+      error: 'error'
+    }),
+    newProviderName: { 
+      get() { return this.$store.getters.newProviderName; },
+      set(value) { this.$store.commit('newProviderName', value) } 
     }
   },
-  async created() {
-    this.error = "";
-    try {
-      this.providers = await ProviderService.getProviders();
-    } catch(err) {
-      this.error = `Wooops! Something gone wrong while gettings providers. Keep calm and try again later... \n ERR:${err.message}`;
-    }
+  created() {
+    this.$store.commit('getProviders');
   },
   methods: {
-    async createProvider() {
-      this.error = "";
-      try {
-        if (this.providers.length == 0) {
-          this.providers = await ProviderService.getProviders(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
-        }
-        const createProviderResponse = await ProviderService.createProvider(this.newProviderName);
-        this.providers.push({
-          _id: createProviderResponse.message,
-          name: this.newProviderName,
-          readonly: true
-        });
-        this.newProviderName = "";
-      } catch(err) {
-        this.error = `Wooops! Something gone wrong while creating provider. Keep calm and try again later... \n ERR:${err.message}`;
-      }
+    createProvider() {
+      // TODO: If click twise to Add Provider when input is empty, then error message don't show is second time
+      this.$store.commit('createProvider');
     },
-    async deleteProvider(index) {
-      this.error = "";
-      try {
-        await ProviderService.deleteProvider(this.providers[index]._id);
-        this.providers.splice(index, 1);
-      } catch(err) {
-        this.error = `Wooops! Something gone wrong while deleting provider. Keep calm and try again later... \n ERR:${err.message}`;
-      }
+    deleteProvider(index) {
+      this.$store.commit('deleteProvider', index);
     },
-    async editProvider(index) {
-      this.providers[index].readonly = false;
+    editProvider(index) {
+      this.$store.commit('editProvider', index);
     },
-    async updateProvider(index) {
-      this.error = "";
-      try {
-        await ProviderService.updateProvider(this.providers[index]._id, this.providers[index].name);
-        this.providers[index].readonly = true;
-      } catch(err) {
-        this.error = `Wooops! Something gone wrong while saving provider. Keep calm and try again later... \n ERR:${err.message}`;
-      }
+    updateProvider(index) {
+      this.$store.commit('updateProvider', index);
     },
-    async undoSaveProvider(index) {
-      // TODO: Optimize undo saving: don't get provider from DB, save prev value
-      this.error = "";
-      try {
-        const oldProvider = await ProviderService.getProvider(this.providers[index]._id)
-        this.providers[index].name = oldProvider.name;
-        this.providers[index].readonly = true;
-      } catch(err) {
-        this.error = `Wooops! Something gone wrong while undo saving provider. Keep calm and try again later... \n ERR:${err.message}`;
-      }
+    undoSaveProvider(index) {
+      this.$store.commit('undoSaveProvider', index);
     }
   }
 }
@@ -102,6 +67,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 div.error {  
+  position: absolute;
+  top: 0px;
+  left: 37%;
+  width: 26%;
+  background-color: orangered;
+  color: white;
+}
+/*
+div.error {  
   opacity: 0;
   position: absolute;
   top: 0px;
@@ -109,8 +83,8 @@ div.error {
   width: 26%;
   background-color: orangered;
   color: white;
-  -webkit-animation-name: widthChange; /* Safari 4.0 - 8.0 */
-  -webkit-animation-duration: 5s; /* Safari 4.0 - 8.0 */
+  -webkit-animation-name: widthChange;
+  -webkit-animation-duration: 5s;
   animation-name: widthChange;
   animation-duration: 5s;
 }
@@ -129,6 +103,7 @@ div.error {
   10%  {opacity: 1;}
   100% {opacity: 1;}
 }
+*/
 
 h3 {
   margin: 40px 0 0;
