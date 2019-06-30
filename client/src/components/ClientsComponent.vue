@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1>Clients</h1>
-    <button>New Client</button>
+    <button v-on:click="createClient()">New Client</button>
     <table class="clients">
       <thead>
         <tr>
@@ -22,7 +22,14 @@
           <td>{{ client.name }}</td>
           <td>{{ client.email }}</td>
           <td>{{ client.phone }}</td>
-          <td>{{ client.providersString }}</td>
+          <td>
+            <span class="provider-name"
+              v-for="(id, index) in client.providers"
+              v-bind:key="index"
+            >
+              {{ getProviderNameById(id) }}
+            </span>
+          </td>
           <td><button v-on:click="editClient(index)">Edit</button></td>
         </tr>
       </tbody>
@@ -37,16 +44,17 @@ export default {
   name: 'ClientsComponent',
   computed: {
     ...mapGetters({
-      clients: 'clients'
+      clients: 'clients',
+      getProviderNameById: 'getProviderNameById'
     })
   },
   created() {
+    this.$store.commit('getProviders');
     this.$store.commit('getClients');
   },
   methods: {
     createClient() {
-      // TODO: If click twise to Add Provider when input is empty, then error message don't show is second time
-      //this.$store.commit('createProvider');
+      this.$store.commit('createClient');
     },
     editClient(index) {
       this.$store.commit('editClient', index);

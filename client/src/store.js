@@ -1,3 +1,5 @@
+// TODO: Make error messages more readebl
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -12,13 +14,14 @@ export const store = new Vuex.Store({
         providers: [],
         clients: [],        
         newProviderName: '',
-        client: {
+        newClient: {
             _id: "",
             name: "",
             email: "",
-            phohe: 0,
+            phone: 0,
             providers: []
         },
+        newClientIndex: -1,
         showClient: false
     },
     getters: {
@@ -29,7 +32,7 @@ export const store = new Vuex.Store({
             return state.clients;
         },
         client(state) {
-            return state.client;
+            return state.newClient;
         },
         error(state) {
             return state.error;
@@ -40,16 +43,17 @@ export const store = new Vuex.Store({
         showClient(state) {
             return state.showClient;
         },
-        /*
-        getProvidersNames(state, ids) {
-            const names = "";
-            ids.forEach(id => {
-                const provider = ProviderService.getProvider(id);
-                names = `${names}, ${provider.name}`;
-            });
-            return names;
+        newClientIndex(state) {
+            return state.newClientIndex;
+        },        
+        getProviderNameById: state => id => {
+            const provider = state.providers.find((provider) => { return provider._id === id  });
+            if (provider) {
+                return provider.name
+            } else {
+                return id;
+            }
         }
-        */
     },
     mutations: {
         newProviderName (state, value) {
@@ -61,13 +65,14 @@ export const store = new Vuex.Store({
                 const providers = await ProvidersService.getProviders();
                 state.providers = providers.map(provider => ({
                     ...provider,
-                    readonly: true
+                    readonly: true,
+                    checked: state.newClient.providers.includes(provider._id)
                 }));
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while gettings providers. Keep calm and try again later... \n ERR:${err.message}`;
             }
         },
-        async createProvider(state) {
+        async addProvider(state) {
             //TODO: Work with "name" papam, not with state.newProviderName
             state.error = "";
             if (state.newProviderName !== "") {
@@ -75,11 +80,12 @@ export const store = new Vuex.Store({
                     if (state.providers.length == 0) {
                         state.providers = await ProvidersService.getProviders(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
                     }
-                    const createProviderResponse = await ProvidersService.createProvider(state.newProviderName);
+                    const providersResponse = await ProvidersService.createProvider(state.newProviderName);
                     const provider = {
-                        _id: createProviderResponse.message,
+                        _id: providersResponse.message,
                         name: state.newProviderName,
-                        readonly: true
+                        readonly: true,
+                        checked: false
                     }
                     state.providers.push(provider);
                     state.newProviderName = "";
@@ -102,7 +108,7 @@ export const store = new Vuex.Store({
         editProvider(state, index) {
             state.providers[index].readonly = false;
         },
-        async updateProvider(state, index) {
+        async saveProvider(state, index) {
             state.error = "";
             try {
                 await ProvidersService.updateProvider(state.providers[index]._id, state.providers[index].name);
@@ -122,24 +128,106 @@ export const store = new Vuex.Store({
                 state.error = `Wooops! Something gone wrong while undo saving provider. Keep calm and try again later... \n ERR:${err.message}`;
             }
         },
+        toggleProvider(state, index) {
+            state.providers[index].checked = !state.providers[index].checked;
+        },
         async getClients(state) {
             state.error = "";
             try {
                 const clients = await ClientsService.getClients();
                 state.clients = clients.map(client => ({
                     ...client,
-                    providersString: "TODO"//$store.getters.getProvidersNames(state, client.providers)
+                    //providersString: client.providers//$store.getters.getProvidersNames(state, client.providers)
                 }));
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while gettings clients. Keep calm and try again later... \n ERR:${err.message}`;
             }
         },
         editClient(state, index) {
-            state.showClient = true;
-            state.client = state.clients[index];
+            state.newClient._id = state.clients[index]._id;
+            state.newClient.name = state.clients[index].name;
+            state.newClient.email = state.clients[index].email;
+            state.newClient.phone = state.clients[index].phone;
+            state.newClient.providers = state.clients[index].providers;
+
+            state.newClientIndex = index;
+            state.showClient = true;            
         },
-        undoSaveClient(state, index) {
-            state.showClient = false;
+        createClient(state) {
+            state.newClient._id = "";
+            state.newClient.name = "";
+            state.newClient.email = "";
+            state.newClient.phone = 0;
+            state.newClient.providers = [];
+
+            state.newClientIndex = -1;
+            state.showClient = true;            
+        },
+        undoSaveClient(state) {
+            state.newClientIndex = -1;
+            state.showClient = false;            
+        },
+        async deleteClient(state) {
+            state.error = "";
+            try {
+                const index = state.newClientIndex;
+
+                await ClientsService.deleteClient(state.clients[index]._id);
+                state.clients.splice(index, 1);
+                state.newClientIndex = -1;
+                state.showClient = false;                
+            } catch(err) {
+                state.error = `Wooops! Something gone wrong while deleting client. Keep calm and try again later... \n ERR:${err.message}`;
+            }
+        },
+        async saveClient(state) {
+            state.error = "";
+            try {
+                const index = state.newClientIndex;
+
+                state.newClient.providers = state.providers.filter((provider) => { return provider.checked  }).map((provider) => {return provider._id});
+
+                await ClientsService.updateClient(state.newClient._id, state.newClient);
+
+                state.clients[index]._id = state.newClient._id;
+                state.clients[index].name = state.newClient.name;
+                state.clients[index].email = state.newClient.email;
+                state.clients[index].phone = state.newClient.phone;
+                state.clients[index].providers = state.newClient.providers;
+
+                state.newClientIndex = -1;
+                state.showClient = false;
+            } catch(err) {
+                state.error = `Wooops! Something gone wrong while saving client. Keep calm and try again later... \n ERR:${err.message}`;
+            }
+        },
+        async addClient(state) {
+            state.error = "";
+            if (state.newClient.name !== "") {
+                try {        
+                    if (state.clients.length == 0) {
+                        state.clients = await ClientsService.getClients(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
+                    }
+                    state.newClient.providers = state.providers.filter((provider) => { return provider.checked  }).map((provider) => {return provider._id});
+
+                    const clientsResponse = await ClientsService.createClient(state.newClient);
+                    const client = {
+                        _id: clientsResponse.message,
+                        name: state.newClient.name,
+                        email: state.newClient.email,
+                        phone: state.newClient.phone,
+                        providers: state.newClient.providers
+                    }
+                    state.clients.push(client);
+
+                    state.newClientIndex = -1;
+                    state.showClient = false;
+                    } catch(err) {
+                        state.error = `Wooops! Something gone wrong while creating client. Keep calm and try again later... \n ERR:${err.message}`;
+                    }
+            } else {
+                state.error = `Please enter client name`;
+            }
         },
     }
 });

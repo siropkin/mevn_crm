@@ -17,10 +17,15 @@ class ClientsService {
     }
 
     // Create Client
-    static createClient(name, email, phone, providers) {
+    static createClient(client) {
         return new Promise(async (resolve, reject) => {
             try {
-                const res = await axios.post(url, { name, email, phone, providers });
+                const res = await axios.post(url, { 
+                    name: client.name,
+                    email: client.email,
+                    phone: client.phone,
+                    providers: client.providers
+                });
                 const data = res.data;
                 resolve(data);
             } catch(err) {
@@ -43,9 +48,14 @@ class ClientsService {
     }
 
     // Update Client by ID
-    static updateClient(id, name, email, phone, providers) {
+    static updateClient(id, client) {
         // TODO: Check if param dont exist or empty
-        return axios.patch(`${url}${id}`, { name, email, phone, providers });
+        return axios.patch(`${url}${id}`, { 
+            name: client.name,
+            email: client.email,
+            phone: client.phone,
+            providers: client.providers
+        });
     }
 
     // Delete Client by ID

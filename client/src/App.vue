@@ -80,9 +80,12 @@ div.error {
 */
 div.client-container {  
   position: absolute;
-  top: 49%;
+  top: 30%;
   left: 30%;
   width: 40%;
-  background-color: gray;
+  background-color: #44475C;
+  color: #FFF;
+  text-align: left;
+  padding: 15px;
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div class="client-container">    
-    <h1>Edit Client</h1>
+    <h1 :hidden="newClientIndex == -1">Edit Client</h1>
+    <h1 :hidden="newClientIndex !== -1">Add Client</h1>
     <hr>
     <div class="client">
       <label for="edit-client-name">Name: </label> 
@@ -11,9 +12,10 @@
       <input type="text" id="edit-client-phone" v-model="client.phone" placeholder="Client phone"> <br/>
       <ProvidersComponent />
       <hr>
-      <button v-on:click="deleteClient(index)">Delete Client</button>
-      <button v-on:click="undoSaveClient(index)">Cancel</button>
-      <button v-on:click="saveClient(index)">Save Client</button>
+      <button :hidden="newClientIndex == -1" v-on:click="deleteClient()">Delete Client</button>
+      <button v-on:click="undoSaveClient()">Cancel</button>
+      <button :hidden="newClientIndex == -1" v-on:click="saveClient()">Save Client</button>
+      <button :hidden="newClientIndex !== -1" v-on:click="addClient()">Add Client</button>
     </div>
   </div>
 </template>
@@ -29,7 +31,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      client: 'client'
+      client: 'client',
+      newClientIndex: 'newClientIndex'
     }),
   },
   /*
@@ -38,17 +41,19 @@ export default {
   },
   */
   methods: {
-    createClient() {
-      this.$store.commit('createClient');
+    addClient() {
+      this.$store.commit('addClient');
     },
-    deleteClient(index) {
-      this.$store.commit('deleteClient', index);
+    deleteClient() {
+      if(confirm("Do you really want to delete?")) {
+        this.$store.commit('deleteClient');
+      }
     },
-    updateClient(index) {
-      this.$store.commit('updateClient', index);
+    saveClient() {
+      this.$store.commit('saveClient');
     },
-    undoSaveClient(index) {
-      this.$store.commit('undoSaveClient', index);
+    undoSaveClient() {
+      this.$store.commit('undoSaveClient');
     }
   }
 }

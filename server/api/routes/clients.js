@@ -190,8 +190,7 @@ router.post("/", async (req, res, next) => {
     // TODO: Optimize provider find code
     // TODO: Catch if there is equals providerId
     const errors = [];
-    for (const provider of req.body.providers) {
-        const id = provider._id;
+    for (const id of req.body.providers) {
         await Provider.findById(id)
             .then(provider => {
                 if (!provider) {
@@ -243,8 +242,23 @@ router.get("/:clientId", async (req, res, next) => {
 
 // Update Client by ID
 router.patch("/:clientId", async (req, res, next) => {
-    // TODO: Add check if Provider exists
+    // TODO: Optimize provider find code
     // TODO: Catch if there is equals providerId
+    const errors = [];
+    for (const id of req.body.providers) {
+        await Provider.findById(id)
+            .then(provider => {
+                if (!provider) {
+                    errors.push(`Provider with ID ${id} not found`);
+                }
+            })
+            .catch(err => {
+                errors.push(err.message);
+            });
+    }
+    if (errors.length > 0) {
+        return res.status(404).json({ message: JSON.stringify(errors) });
+    }
     const id = req.params.clientId;
     /*
     const updateOps = {};
