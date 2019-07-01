@@ -44,12 +44,28 @@ class ProvidersService {
 
     // Update Provider by ID
     static updateProvider(id, name) {
-        return axios.patch(`${url}${id}`, { name });
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await axios.patch(`${url}${id}`, { name });
+                const data = res.data;
+                resolve(data);
+            } catch(err) {
+                reject(err);
+            }
+        });
     }
 
     // Delete Provider by ID
     static deleteProvider(id) {
-        return axios.delete(`${url}${id}`)
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await axios.delete(`${url}${id}`);
+                const data = res.data;
+                resolve(data);
+            } catch(err) {
+                reject(err);
+            }
+        });
     }
 }
 

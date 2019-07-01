@@ -49,18 +49,33 @@ class ClientsService {
 
     // Update Client by ID
     static updateClient(id, client) {
-        // TODO: Check if param dont exist or empty
-        return axios.patch(`${url}${id}`, { 
-            name: client.name,
-            email: client.email,
-            phone: client.phone,
-            providers: client.providers
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await axios.patch(`${url}${id}`, { 
+                    name: client.name,
+                    email: client.email,
+                    phone: client.phone,
+                    providers: client.providers
+                });
+                const data = res.data;
+                resolve(data);
+            } catch(err) {
+                reject(err);
+            }
         });
     }
 
     // Delete Client by ID
     static deleteClient(id) {
-        return axios.delete(`${url}${id}`)
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await axios.delete(`${url}${id}`);
+                const data = res.data;
+                resolve(data);
+            } catch(err) {
+                reject(err);
+            }
+        });
     }
 }
 

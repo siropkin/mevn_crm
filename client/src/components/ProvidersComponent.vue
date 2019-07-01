@@ -30,7 +30,7 @@ export default {
   name: 'ProvidersComponent',
   computed: {
     ...mapGetters({
-      providers: 'providers'
+      providers: 'providersForClient'
     }),
     newProviderName: { 
       get() { return this.$store.getters.newProviderName; },
@@ -38,7 +38,7 @@ export default {
     }
   },
   created() {
-    this.$store.commit('getProviders');
+    this.$store.commit('getProvidersForClient');
   },
   methods: {
     addProvider() {

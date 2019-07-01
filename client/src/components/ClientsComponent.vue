@@ -11,8 +11,11 @@
           <th>Providers</th>
           <th></th>
         </tr>
-      </thead>
+      </thead>      
       <tbody>
+        <tr v-if="clients.length == 0">
+          <td><div id="preloader"></div></td>
+        </tr>
         <tr class="client"
           v-for="(client, index) in clients"
           v-bind:item="client"
@@ -33,7 +36,7 @@
           <td><button v-on:click="editClient(index)">Edit</button></td>
         </tr>
       </tbody>
-    </table>
+    </table>    
   </div>
 </template>
 
@@ -49,7 +52,7 @@ export default {
     })
   },
   created() {
-    this.$store.commit('getProviders');
+    this.$store.commit('getProvidersForClientsList');
     this.$store.commit('getClients');
   },
   methods: {
@@ -93,6 +96,32 @@ table td:last-child {
 table tbody tr:nth-child(2n) td {
   background: #D4D8F9;
 }
+
+
+#preloader {
+    position: relative;
+    left: 50%;
+    top: 50%;
+    width: 48px;
+    height: 48px;
+    margin-left: -24px;
+    margin-top: -24px;
+    border: #31a9df 3px solid;
+    border-left-color: transparent;
+    border-radius: 50%;
+    -webkit-animation: rotating 1s linear infinite;
+}
+
+@-webkit-keyframes rotating {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+
 
 h3 {
   margin: 40px 0 0;

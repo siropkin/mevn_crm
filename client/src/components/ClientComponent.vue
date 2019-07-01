@@ -1,7 +1,7 @@
 <template>
   <div class="client-container">    
     <h1 :hidden="newClientIndex == -1">Edit Client</h1>
-    <h1 :hidden="newClientIndex !== -1">Add Client</h1>
+    <h1 :hidden="newClientIndex !== -1">New Client</h1>
     <hr>
     <div class="client">
       <label for="edit-client-name">Name: </label> 
@@ -35,11 +35,6 @@ export default {
       newClientIndex: 'newClientIndex'
     }),
   },
-  /*
-  created() {
-    this.$store.commit('getProviders');
-  },
-  */
   methods: {
     addClient() {
       this.$store.commit('addClient');
@@ -61,6 +56,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+input {
+  width: 200px;
+}
 h3 {
   margin: 40px 0 0;
 }
