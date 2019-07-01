@@ -1,20 +1,32 @@
 <template>
-  <div class="container">
-    <h1>Clients</h1>
-    <button v-on:click="createClient()">New Client</button>
-    <table class="clients">
+  <div class="clients-container">
+    <div class="clients-toolbar">
+      <h2>Clients</h2>
+      <button id="client-create-btn" v-on:click="createClient()">New Client</button>
+    </div>
+    <table class="clients-list">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Providers</th>
-          <th></th>
+          <th width="20%">Name</th>
+          <th width="20%">Email</th>
+          <th width="20%">Phone</th>
+          <th width="35%">Providers</th>
+          <th width="5%"></th>
         </tr>
       </thead>      
       <tbody>
-        <tr v-if="clients.length == 0">
-          <td><div id="preloader"></div></td>
+        <tr class="preloader" v-if="clientsLoading"> 
+          <td colspan="5">
+            <div id="preloader"></div>
+          </td>
+        </tr>
+        <tr class="clients-no-data" v-if="!clientsLoading && clients.length == 0"> 
+          <td colspan="5">
+            <div style="display: inline-block">
+              No data.
+              <button id="refresh-btn" v-on:click="refreshData">Refresh</button>
+            </div>            
+          </td>
         </tr>
         <tr class="client"
           v-for="(client, index) in clients"
@@ -24,19 +36,20 @@
         >
           <td>{{ client.name }}</td>
           <td>{{ client.email }}</td>
-          <td>{{ client.phone }}</td>
+          <td>{{ client.phone.toString().replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') }}</td>
           <td>
             <span class="provider-name"
               v-for="(id, index) in client.providers"
               v-bind:key="index"
-            >
-              {{ getProviderNameById(id) }}
-            </span>
+            >{{ getProviderNameById(id) }}</span>
           </td>
-          <td><button v-on:click="editClient(index)">Edit</button></td>
+          <td style="text-align:center">
+            <button id="client-edit-btn" v-on:click="editClient(index)">Edit</button>
+          </td>
         </tr>
       </tbody>
-    </table>    
+    </table>
+    <div v-if="clients.length == 1" id="preloader"></div>
   </div>
 </template>
 
@@ -47,9 +60,11 @@ export default {
   name: 'ClientsComponent',
   computed: {
     ...mapGetters({
+      clientsLoading: 'clientsLoading',
       clients: 'clients',
-      getProviderNameById: 'getProviderNameById'
-    })
+      providers: 'providersForClients',
+      getProviderNameById: 'getProviderNameByIdForClientsList'
+    })    
   },
   created() {
     this.$store.commit('getProvidersForClientsList');
@@ -61,6 +76,10 @@ export default {
     },
     editClient(index) {
       this.$store.commit('editClient', index);
+    },
+    refreshData() {
+      this.$store.commit('getProvidersForClientsList');
+      this.$store.commit('getClients');
     }
   }
 }
@@ -68,73 +87,145 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-table {
-  font-family: 'Open Sans', sans-serif;
-  width: 750px;
+div.clients-container {
+  position: relative;
+  left: 0;
+  top: 0;
+  width: 100%;  
+}
+
+div.clients-toolbar {
+  height: 65px;  
+  border: 1px solid lightgray;
+  background:#f1f5f9;
+}
+
+h2 {
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  padding-left: 16px;
+  margin: 0;
+  color: #37798b;
+}
+
+#client-create-btn {
+  position: absolute;
+  right: 16px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);  
+  border: 1px solid #ADADAD;
+  border-radius: 7px;
+  margin: 0;
+  padding: 10px 20px 10px 20px; 
+  text-decoration: none; 
+  display: inline-block;
+  color: #4A4A4A;
+  background-color: #F7F5F6; 
+  background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+}
+
+#client-create-btn:hover {
+  border: 1px solid #ADADAD;
+  background-color: #E0E0E0; 
+  background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+}
+
+table.clients-list {
+  width: 100%;
   border-collapse: collapse;
-  border: 3px solid #44475C;
-  margin: 10px 10px 0 10px;
+  border: 1px solid lightgray;
+  background: white;
 }
 
-table th {
-  text-transform: uppercase;
+table.clients-list thead {
+  box-shadow: 0 8px 8px -6px black;
+}
+
+table.clients-list th {
   text-align: left;
-  background: #44475C;
-  color: #FFF;
-  padding: 8px;
+  color: black;
+  padding: 16px;
   min-width: 30px;
+  border: 1.5px solid gray;
+  background-color: #F7F5F6; 
+  background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
 }
 
-table td {
+table.clients-list tr.client td {
   text-align: left;
-  padding: 8px;
-  border-right: 2px solid #7D82A8;
-}
-table td:last-child {
-  border-right: none;
-}
-table tbody tr:nth-child(2n) td {
-  background: #D4D8F9;
+  padding: 16px;
+  border: 1px solid lightgray;
 }
 
+table.clients-list tr.clients-no-data td {
+  text-align: center;
+  padding: 16px;
+  border: 1px solid lightgray;
+  color: gray
+}
 
-#preloader {
-    position: relative;
-    left: 50%;
-    top: 50%;
-    width: 48px;
-    height: 48px;
-    margin-left: -24px;
-    margin-top: -24px;
-    border: #31a9df 3px solid;
-    border-left-color: transparent;
-    border-radius: 50%;
-    -webkit-animation: rotating 1s linear infinite;
+table.clients-list tr.preloader td {
+  padding: 10px;
+  border: 1px solid lightgray;
+  color: gray
+}
+
+#client-edit-btn, #client-edit-btn:hover, #client-edit-btn:after, #client-edit-btn:focus {
+  clear: both;
+  text-align: center;
+  color: #108be3;
+  text-decoration: underline;
+  border: none;
+  box-shadow: none;
+  background: none;
+  outline: 0;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 100%;
+}
+
+#refresh-btn, #refresh-btn:hover, #refresh-btn:after, #refresh-btn:focus {
+  clear: both;
+  text-align: center;
+  color: gray;
+  text-decoration: underline;
+  border: none;
+  box-shadow: none;
+  background: none;
+  outline: 0;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 100%;
+  padding: 0;
+}
+
+span.provider-name {
+    margin: 0;
+    padding: 0;
+}
+
+span.provider-name:not(:last-of-type):after {
+    content: ", ";
+}
+
+div#preloader {
+  margin: 0 auto;
+  width: 28px;
+  height: 28px;
+  border: gray 2px solid;
+  border-left-color: transparent;
+  border-radius: 50%;
+  -webkit-animation: rotating 1s linear infinite;
 }
 
 @-webkit-keyframes rotating {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-    to {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-
-
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }
 </style>

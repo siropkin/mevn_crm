@@ -1,9 +1,9 @@
 <template>
   <div class="client-container">    
-    <h1 :hidden="newClientIndex == -1">Edit Client</h1>
-    <h1 :hidden="newClientIndex !== -1">New Client</h1>
-    <hr>
-    <div class="client">
+    <div class="client-card">
+      <h1 v-if="client._id == -1">New Client</h1>  
+      <h1 v-else>Edit Client</h1>  
+      <hr>
       <label for="edit-client-name">Name: </label> 
       <input type="text" id="edit-client-name" v-model="client.name" placeholder="Client name"> <br/>
       <label for="edit-client-email">Email: </label> 
@@ -12,10 +12,15 @@
       <input type="text" id="edit-client-phone" v-model="client.phone" placeholder="Client phone"> <br/>
       <ProvidersComponent />
       <hr>
-      <button :hidden="newClientIndex == -1" v-on:click="deleteClient()">Delete Client</button>
-      <button v-on:click="undoSaveClient()">Cancel</button>
-      <button :hidden="newClientIndex == -1" v-on:click="saveClient()">Save Client</button>
-      <button :hidden="newClientIndex !== -1" v-on:click="addClient()">Add Client</button>
+      <template v-if="client._id == -1">
+        <button v-on:click="undoSaveClient()">Cancel</button>
+        <button v-on:click="addClient()">Add Client</button>
+      </template>
+      <template v-else>
+        <button v-on:click="deleteClient()">Delete Client</button>
+        <button v-on:click="undoSaveClient()">Cancel</button>
+        <button v-on:click="saveClient()">Save Client</button>
+      </template>
     </div>
   </div>
 </template>
@@ -31,8 +36,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      client: 'client',
-      newClientIndex: 'newClientIndex'
+      client: 'client'
     }),
   },
   methods: {
@@ -57,20 +61,17 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 input {
-  width: 200px;
+  width: 100px;
 }
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+div.client-container {  
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #44475C;
+  color: #FFF;
+  text-align: left;
+  padding: 15px;
 }
 </style>

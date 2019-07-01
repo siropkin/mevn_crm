@@ -11,72 +11,71 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
     state: {
         error: '',
+        clientsLoading: true,
         clients: [],
-        providersForClient: [],
-        providersForClientsList: [],        
-        newProvider: {
-            _id: "",
-            name: ""
-        },
-        newProviderIndex: -1,
-        newClient: {
+        providersForClients: [],
+        client: {
             _id: "",
             name: "",
             email: "",
             phone: 0,
             providers: []
         },
-        newClientIndex: -1,
-        showClient: false
+        providersForClient: [],
+        showClientCard: false,                       
+        provider: {
+            _id: "",
+            name: ""
+        }     
     },
     getters: {
         error(state) {
             return state.error;
         },
+        clientsLoading(state) {
+            return state.clientsLoading;
+        },
         providersForClient(state) {
             return state.providersForClient;
         },
-        provider(state) {
-            return state.newProvider;
+        providersForClients(state) {
+            return state.providersForClients;
         },
-        newProviderName(state) {
-            return state.newProvider.name;
+        provider(state) {
+            return state.provider;
         },        
-        getProviderNameById: state => id => {
-            const provider = state.providersForClientsList.find((provider) => { return provider._id === id  });
+        getProviderNameByIdForClientsList: state => id => {
+            const provider = state.providersForClients.find((provider) => { return provider._id === id  });
             if (provider) {
                 return provider.name
             } else {
                 return id;
             }
         },
-        newProviderIndex(state) {
-            return state.newProviderIndex;
-        },
         clients(state) {
             return state.clients;
         },
         client(state) {
-            return state.newClient;
+            return state.client;
         },        
-        showClient(state) {
-            return state.showClient;
-        },
-        newClientIndex(state) {
-            return state.newClientIndex;
+        showClientCard(state) {
+            return state.showClientCard;
         }
     },
     mutations: {
-        newProviderName (state, value) {
-            state.newProvider.name = value
+        setProviderName (state, value) {
+            state.provider.name = value
         },
         async getProvidersForClientsList(state) {
             state.error = "";
             try {
+                state.providersForClients = await ProvidersService.getProviders();
+                /*
                 const providersForClientsList = await ProvidersService.getProviders();
-                state.providersForClientsList = providersForClientsList.map(provider => ({
+                state.providersForClients = providersForClientsList.map(provider => ({
                     ...provider
                 }));
+                */
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while gettings providers. Keep calm and try again later... \n ERR:${err.message}`;
             }
@@ -88,7 +87,7 @@ export const store = new Vuex.Store({
                 state.providersForClient = providers.map(provider => ({
                     ...provider,
                     readonly: true,
-                    checked: state.newClient.providers.includes(provider._id)
+                    checked: state.client.providers.includes(provider._id)
                 }));
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while gettings providers. Keep calm and try again later... \n ERR:${err.message}`;
@@ -101,15 +100,16 @@ export const store = new Vuex.Store({
                 if (state.providersForClient.length == 0) {
                     state.providersForClient = await ProvidersService.getProviders(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
                 }
-                const providersResponse = await ProvidersService.createProvider(state.newProvider.name);
+                const providersResponse = await ProvidersService.createProvider(state.provider.name);
                 const provider = {
                     _id: providersResponse.message,
-                    name: state.newProvider.name,
+                    name: state.provider.name,
                     readonly: true,
                     checked: false
                 }
                 state.providersForClient.push(provider);
-                state.newProvider.name = "";
+                state.providersForClients.push(provider);
+                state.provider.name = "";
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while creating provider. Keep calm and try again later... \n ERR:${err.message}`;
             }
@@ -131,6 +131,7 @@ export const store = new Vuex.Store({
             try {
                 await ProvidersService.updateProvider(state.providersForClient[index]._id, state.providersForClient[index].name);
                 state.providersForClient[index].readonly = true;
+                state.providersForClients[index].name = state.providersForClient[index].name;
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while saving provider. Keep calm and try again later... \n ERR:${err.message}`;
             }
@@ -151,53 +152,63 @@ export const store = new Vuex.Store({
         },
         async getClients(state) {
             state.error = "";
+            state.clientsLoading = true;
             try {
-                const clients = await ClientsService.getClients();
-                state.clients = clients.map(client => ({
-                    ...client,
-                    //providersString: client.providers//$store.getters.getProvidersNames(state, client.providers)
-                }));
+                state.clients = await ClientsService.getClients();
+                state.clientsLoading = false;
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while gettings clients. Keep calm and try again later... \n ERR:${err.message}`;
+                state.clientsLoading = false;
             }
         },
         editClient(state, index) {
-            state.newClient._id = state.clients[index]._id;
-            state.newClient.name = state.clients[index].name;
-            state.newClient.email = state.clients[index].email;
-            state.newClient.phone = state.clients[index].phone;
-            state.newClient.providers = state.clients[index].providers;
-
-            state.newClientIndex = index;
-            state.showClient = true;
-
+            state.error = "";
+            
             state.providersForClient = [];
+
+            state.client._id = state.clients[index]._id;
+            state.client.name = state.clients[index].name;
+            state.client.email = state.clients[index].email;
+            state.client.phone = state.clients[index].phone;
+            state.client.providers = state.clients[index].providers;
+
+            state.showClientCard = true;           
         },
-        createClient(state) {
-            state.newClient._id = "";
-            state.newClient.name = "";
-            state.newClient.email = "";
-            state.newClient.phone = 0;
-            state.newClient.providers = [];
+        async createClient(state) {
+            state.error = "";
+            try {
+                if (state.providersForClients.length == 0) {
+                    state.providersForClients = await ProvidersService.getProviders(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
+                }
+                if (state.clients.length == 0) {
+                    state.clients = await ClientsService.getClients(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
+                }
 
-            state.newClientIndex = -1;
-            state.showClient = true;
+                state.providersForClient = [];
 
-            state.providersForClient = [];
+                state.client._id = -1;
+                state.client.name = "";
+                state.client.email = "";
+                state.client.phone = 0;
+                state.client.providers = [];
+    
+                state.showClientCard = true;     
+            } catch(err) {
+                state.error = `Wooops! Something gone wrong while creating client. Keep calm and try again later... \n ERR:${err.message}`;
+            }
+       
         },
         undoSaveClient(state) {
-            state.newClientIndex = -1;
-            state.showClient = false;            
+            state.error = "";            
+            state.showClientCard = false;            
         },
         async deleteClient(state) {
             state.error = "";
             try {
-                const index = state.newClientIndex;
-
-                await ClientsService.deleteClient(state.clients[index]._id);
+                await ClientsService.deleteClient(state.client._id);
+                const index = state.clients.findIndex((client) => { return client._id === state.client._id })
                 state.clients.splice(index, 1);
-                state.newClientIndex = -1;
-                state.showClient = false;                
+                state.showClientCard = false;                
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while deleting client. Keep calm and try again later... \n ERR:${err.message}`;
             }
@@ -205,20 +216,18 @@ export const store = new Vuex.Store({
         async saveClient(state) {
             state.error = "";
             try {
-                const index = state.newClientIndex;
+                state.client.providers = state.providersForClient.filter((provider) => { return provider.checked  }).map((provider) => {return provider._id});
 
-                state.newClient.providers = state.providersForClient.filter((provider) => { return provider.checked  }).map((provider) => {return provider._id});
+                await ClientsService.updateClient(state.client._id, state.client);
 
-                await ClientsService.updateClient(state.newClient._id, state.newClient);
+                const index = state.clients.findIndex((client) => { return client._id === state.client._id })
+                state.clients[index]._id = state.client._id;
+                state.clients[index].name = state.client.name;
+                state.clients[index].email = state.client.email;
+                state.clients[index].phone = state.client.phone;
+                state.clients[index].providers = state.client.providers;
 
-                state.clients[index]._id = state.newClient._id;
-                state.clients[index].name = state.newClient.name;
-                state.clients[index].email = state.newClient.email;
-                state.clients[index].phone = state.newClient.phone;
-                state.clients[index].providers = state.newClient.providers;
-
-                state.newClientIndex = -1;
-                state.showClient = false;
+                state.showClientCard = false;
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while saving client. Keep calm and try again later... \n ERR:${err.message}`;
             }
@@ -229,20 +238,19 @@ export const store = new Vuex.Store({
                 if (state.clients.length == 0) {
                     state.clients = await ClientsService.getClients(); // need if server dosn't work when page load at a first time, but then server started and we need to reload data  
                 }
-                state.newClient.providers = state.providersForClient.filter((provider) => { return provider.checked  }).map((provider) => {return provider._id});
+                state.client.providers = state.providersForClient.filter((provider) => { return provider.checked  }).map((provider) => {return provider._id});
 
-                const clientsResponse = await ClientsService.createClient(state.newClient);
+                const clientsResponse = await ClientsService.createClient(state.client);
                 const client = {
                     _id: clientsResponse.message,
-                    name: state.newClient.name,
-                    email: state.newClient.email,
-                    phone: state.newClient.phone,
-                    providers: state.newClient.providers
+                    name: state.client.name,
+                    email: state.client.email,
+                    phone: state.client.phone,
+                    providers: state.client.providers
                 }
                 state.clients.push(client);
 
-                state.newClientIndex = -1;
-                state.showClient = false;
+                state.showClientCard = false;
             } catch(err) {
                 state.error = `Wooops! Something gone wrong while creating client. Keep calm and try again later... \n ERR:${err.message}`;
             }

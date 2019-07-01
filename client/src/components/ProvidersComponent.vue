@@ -1,8 +1,8 @@
 <template>
-  <div class="container">    
-    <div class="create-provider">
+  <div class="providers-container">    
+    <div class="providers-toolbar">
       <label for="create-provider">Providers: </label>
-      <input type="text" id="create-provider" v-model="newProviderName" placeholder="Provider name">
+      <input type="text" id="create-provider" v-model="provider.name" placeholder="Provider name">
       <button v-on:click="addProvider()">Add Provider</button>
     </div>  
     <div class="providers-container">
@@ -32,9 +32,9 @@ export default {
     ...mapGetters({
       providers: 'providersForClient'
     }),
-    newProviderName: { 
-      get() { return this.$store.getters.newProviderName; },
-      set(value) { this.$store.commit('newProviderName', value) } 
+    provider: { 
+      get() { return this.$store.getters.provider; },
+      set(value) { this.$store.commit('setProviderName', value) } 
     }
   },
   created() {
