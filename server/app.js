@@ -38,6 +38,7 @@ const clients = require("./api/routes/clients");
 app.use("/api/providers", providers);
 app.use("/api/clients", clients);
 
+/*
 app.use((req, res, next) => {
   const error = new Error("Method not found");
   error.status = 404;
@@ -52,6 +53,7 @@ app.use((error, req, res, next) => {
     }
   });
 });
+*/
 
 // Handle production 
 if (process.env.NODE_ENV === 'production') {
