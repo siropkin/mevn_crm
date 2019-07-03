@@ -41,18 +41,18 @@ export default {
     addClient() {
       let errorMessage = ""; 
       // Name
-      if (this.client.name.length == 0) {
+      if (!this.client.name.length) {
         errorMessage = "Fill client name.";
       }
       // Email
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (this.client.email.length !== 0 && !re.test(this.client.email)) {
+      if (this.client.email && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
-      if (this.client.phone.length !== 0 && this.client.phone.length !== 10) {
+      if (this.client.phone && this.client.phone.length !== 10) {
         errorMessage = "Fill correct phone number.";
       }
-      if (errorMessage.length !== 0) {
+      if (errorMessage) {
         this.$store.commit('setError', errorMessage);
         return false;
       }
@@ -66,18 +66,18 @@ export default {
     saveClient() {
       let errorMessage = ""; 
       // Name
-      if (this.client.name.length == 0) {
+      if (!this.client.name) {
         errorMessage = "Fill client name.";
       }
       // Email
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (this.client.email.length !== 0 && !re.test(this.client.email)) {
+      if (this.client.email && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
-      if (this.client.phone.length !== 0 && this.client.phone.length !== 10) {
+      if (this.client.phone && this.client.phone.length !== 10) {
         errorMessage = "Fill correct phone number.";
       }
-      if (errorMessage.length !== 0) {
+      if (errorMessage) {
         this.$store.commit('setError', errorMessage);
         return false;
       }

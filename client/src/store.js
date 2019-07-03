@@ -1,5 +1,3 @@
-// TODO: Make error messages more readebl
-
 import Vue from 'vue';
 import Vuex from 'vuex';
 

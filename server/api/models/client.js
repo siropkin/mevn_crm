@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
-require('mongoose-type-email');
+//require('mongoose-type-email');
 
 const clientSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: { type: String, required: true },
-    email: mongoose.SchemaTypes.Email,
+    //email: mongoose.SchemaTypes.Email,
+    email: String,
     phone: String,    
     providers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Provider' }]
 });
