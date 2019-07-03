@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/api/clients/';
+const url = 'api/clients/';
 
 class ClientsService {
     // Get all Clients

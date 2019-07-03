@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/api/providers/';
+const url = 'api/providers/';
 
 class ProvidersService {
     // Get all Providers

@@ -52,6 +52,16 @@ app.use((error, req, res, next) => {
   });
 });
 
+// Handle production 
+if (process.env.NODE_ENV === 'production') {
+  const publicFolder = __dirname + '/public/'
+  // Static folder
+  app.use(express.static(publicFolder));
+
+  // Handle SPA
+  app.get(/.*/, (req, res) => res.sendFile(publicFolder + 'index.html'));
+}
+
 const port = process.env.APP_PORT || 5000;
 
 app.listen(port, () => console.log(`App started on port ${port}`));

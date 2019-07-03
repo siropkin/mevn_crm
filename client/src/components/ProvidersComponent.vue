@@ -150,7 +150,7 @@ div.provider {
 #provider-edit-btn {
   border: none;
   background-size: cover;
-  background: url('./img/edit-icon.svg') no-repeat center;
+  background: url('../assets/edit-icon.svg') no-repeat center;
   width: 20px;
   height: 20px;
   margin-left: 3px;
@@ -161,7 +161,7 @@ div.provider {
 #provider-delete-btn {
   border: none;
   background-size: cover;
-  background: url('./img/trash-alt.svg') no-repeat center;
+  background: url('../assets/trash-alt.svg') no-repeat center;
   width: 20px;
   height: 20px;
   margin-left: 3px;
@@ -172,7 +172,7 @@ div.provider {
 #provider-save-btn {
   border: none;
   background-size: cover;
-  background: url('./img/check-square.svg') no-repeat center;
+  background: url('../assets/check-square.svg') no-repeat center;
   width: 20px;
   height: 20px;
   margin-left: 3px;
@@ -183,7 +183,7 @@ div.provider {
 #provider-cancel-btn {
   border: none;
   background-size: cover;
-  background: url('./img/window-close.svg') no-repeat center;
+  background: url('../assets/window-close.svg') no-repeat center;
   width: 20px;
   height: 20px;
   margin-left: 3px;
