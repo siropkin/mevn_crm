@@ -1,4 +1,4 @@
-# simple_express_vue_app
+# Simple CRM
 
 > Example of a fullstack app using Vue.js, Express and MongoDB. You will need to edit the MongoDB connection string in server/app.js to your own.
 
@@ -24,7 +24,6 @@ npm run build
 
 ### Author
 
-Artem Zubkov
 [Artem Zubkov](http://artzub.com/)
 
 ### Version
