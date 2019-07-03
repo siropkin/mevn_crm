@@ -190,5 +190,4 @@ div.provider {
   margin-right: 3px;
   padding: 0;
 }
-
 </style>

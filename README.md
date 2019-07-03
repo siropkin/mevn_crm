@@ -24,7 +24,7 @@ npm run build
 
 ### Author
 
-[Artem Zubkov](http://artzub.com/)
+[Ivan Seredkin](https://www.facebook.com/ivan.seredkin)
 
 ### Version
 

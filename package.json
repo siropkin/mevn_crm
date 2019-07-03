@@ -7,7 +7,7 @@
     "start": "node server/app.js",
     "dev": "nodemon server/app.js"
   },
-  "author": "Artem Zubkov",
+  "author": "Ivan Seredkin",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
