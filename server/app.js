@@ -63,6 +63,6 @@ if (process.env.NODE_ENV === 'production') {
   app.get(/.*/, (req, res) => res.sendFile(publicFolder + 'index.html'));
 }
 
-const port = process.env.APP_PORT || 5000;
+const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`App started on port ${port}`));
