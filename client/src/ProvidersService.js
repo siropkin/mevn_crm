@@ -62,7 +62,7 @@ class ProvidersService {
                 const res = await axios.delete(`${url}${id}`);
                 const data = res.data;
                 resolve(data);
-            } catch(err) {
+            } catch(err) {                
                 reject(err);
             }
         });

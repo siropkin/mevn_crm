@@ -161,6 +161,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
+const Client = require("../models/client");
 const Provider = require("../models/provider");
 
 // Get all Providers
@@ -241,6 +242,33 @@ router.patch("/:providerId", async (req, res, next) => {
 router.delete("/:providerId", async (req, res, next) => {
     // TODO: Update info in Clients objects when Provider is deleted
     const id = req.params.providerId;
+    
+    await Client.find({ 'providers': id })
+        .select('_id name')
+        .exec()
+        .then(result => {
+            if (result.length > 0) {
+                res.status(500).json({ message: `Provider with ID ${id} is using in clients and can't be deleted` });
+            } else {
+                Provider.deleteOne({ _id: id })
+                .exec()
+                .then(result => {
+                    if (result.deletedCount > 0) {
+                        res.status(200).json({ message: `Provider with ID ${id} is deleted` });
+                    } else {
+                        res.status(404).json({ message: `Provider with ID ${id} not found` });
+                    }
+                })
+                .catch(err => {
+                    res.status(500).json({ message: err.message });
+                });
+            }
+            
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message });
+        });
+    /*
     await Provider.deleteOne({ _id: id })
         .exec()
         .then(result => {
@@ -253,6 +281,7 @@ router.delete("/:providerId", async (req, res, next) => {
         .catch(err => {
             res.status(500).json({ message: err.message });
         });
+    */
 });
 
 module.exports = router;

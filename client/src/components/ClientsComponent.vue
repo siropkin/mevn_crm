@@ -2,7 +2,7 @@
   <div class="clients-container">
     <div class="clients-toolbar">
       <h2>Clients</h2>
-      <button id="client-create-btn" v-on:click="createClient()">New Client</button>
+      <button id="client-create-btn" @click="createClient()">New Client</button>
     </div>
     <table class="clients-list">
       <thead>
@@ -15,20 +15,20 @@
         </tr>
       </thead>      
       <tbody>
-        <tr class="preloader" v-if="clientsLoading"> 
+        <tr class="preloader" v-if="clientsLoading || providersLoading"> 
           <td colspan="5">
             <div id="preloader"></div>
           </td>
         </tr>
-        <tr class="clients-no-data" v-if="!clientsLoading && clients.length == 0"> 
+        <tr class="no-data" v-else-if="clients.length == 0"> 
           <td colspan="5">
             <div style="display: inline-block">
               No data.
-              <button id="refresh-btn" v-on:click="refreshData">Refresh</button>
+              <button id="refresh-btn" @click="refreshData">Refresh</button>
             </div>            
           </td>
         </tr>
-        <tr class="client"
+        <tr v-else class="client"
           v-for="(client, index) in clients"
           v-bind:item="client"
           v-bind:index="index"
@@ -41,45 +41,53 @@
             <span class="provider-name"
               v-for="(id, index) in client.providers"
               v-bind:key="index"
-            >{{ getProviderNameById(id) }}</span>
+            >{{ providerNameById(id) }}</span>
           </td>
-          <td style="text-align:center">
-            <button id="client-edit-btn" v-on:click="editClient(index)">Edit</button>
+          <td>
+            <button id="client-edit-btn" @click="editClient(index)">Edit</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <div v-if="clients.length == 1" id="preloader"></div>
+    <div class="client-card" v-if="showClientCard">
+      <ClientComponent />
+    </div>
   </div>
 </template>
 
 <script>
+import ClientComponent from './ClientComponent.vue'
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'ClientsComponent',
+  components: {
+    ClientComponent
+  },
   computed: {
     ...mapGetters({
       clientsLoading: 'clientsLoading',
+      providersLoading: 'providersLoading',
       clients: 'clients',
-      providers: 'providersForClients',
-      getProviderNameById: 'getProviderNameByIdForClientsList'
+      providers: 'providers',
+      providerNameById: 'providerNameById',
+      showClientCard: 'showClientCard'      
     })    
   },
   created() {
-    this.$store.commit('getProvidersForClientsList');
+    this.$store.commit('getProviders');
     this.$store.commit('getClients');
   },
   methods: {
+    refreshData() {
+      this.$store.commit('getProviders');
+      this.$store.commit('getClients');
+    },
     createClient() {
       this.$store.commit('createClient');
     },
     editClient(index) {
       this.$store.commit('editClient', index);
-    },
-    refreshData() {
-      this.$store.commit('getProvidersForClientsList');
-      this.$store.commit('getClients');
     }
   }
 }
@@ -88,48 +96,23 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 div.clients-container {
-  position: relative;
-  left: 0;
-  top: 0;
-  width: 100%;  
+  margin: 0 auto;
+  width: 100%; 
+  max-width: 1000px; 
 }
 
 div.clients-toolbar {
+  position: relative;
   height: 65px;  
   border: 1px solid lightgray;
   background:#f1f5f9;
 }
 
-h2 {
-  position: relative;
-  top: 50%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-  padding-left: 16px;
-  margin: 0;
-  color: #37798b;
-}
-
-#client-create-btn {
+div.client-card {  
   position: absolute;
-  right: 16px;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);  
-  border: 1px solid #ADADAD;
-  border-radius: 7px;
-  margin: 0;
-  padding: 10px 20px 10px 20px; 
-  text-decoration: none; 
-  display: inline-block;
-  color: #4A4A4A;
-  background-color: #F7F5F6; 
-  background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
-}
-
-#client-create-btn:hover {
-  border: 1px solid #ADADAD;
-  background-color: #E0E0E0; 
-  background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+  top: 10px;
+  left: calc(50% - 640px/2);
+  width: 640px;
 }
 
 table.clients-list {
@@ -140,7 +123,7 @@ table.clients-list {
 }
 
 table.clients-list thead {
-  box-shadow: 0 8px 8px -6px black;
+  box-shadow: 0 8px 8px -6px gray;
 }
 
 table.clients-list th {
@@ -159,7 +142,7 @@ table.clients-list tr.client td {
   border: 1px solid lightgray;
 }
 
-table.clients-list tr.clients-no-data td {
+table.clients-list tr.no-data td {
   text-align: center;
   padding: 16px;
   border: 1px solid lightgray;
@@ -170,6 +153,30 @@ table.clients-list tr.preloader td {
   padding: 10px;
   border: 1px solid lightgray;
   color: gray
+}
+
+#client-create-btn {
+  position: absolute;
+  right: 16px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);  
+  border: 1px solid #ADADAD;
+  border-radius: 7px;
+  margin: 0;
+
+  text-decoration: none; 
+  display: inline-block;
+  color: #4A4A4A;
+  background-color: #F7F5F6; 
+  background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);  
+  width: 100px;
+  height: 30px;
+}
+
+#client-create-btn:hover {
+  border: 1px solid #ADADAD;
+  background-color: #E0E0E0; 
+  background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
 }
 
 #client-edit-btn, #client-edit-btn:hover, #client-edit-btn:after, #client-edit-btn:focus {
@@ -184,6 +191,7 @@ table.clients-list tr.preloader td {
   cursor: pointer;
   display: inline-block;
   font-size: 100%;
+  margin: 0 auto;
 }
 
 #refresh-btn, #refresh-btn:hover, #refresh-btn:after, #refresh-btn:focus {
@@ -210,7 +218,7 @@ span.provider-name:not(:last-of-type):after {
     content: ", ";
 }
 
-div#preloader {
+#preloader {
   margin: 0 auto;
   width: 28px;
   height: 28px;
@@ -227,5 +235,15 @@ div#preloader {
   to {
     -webkit-transform: rotate(360deg);
   }
+}
+
+h2 {
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  padding-left: 16px;
+  margin: 0;
+  color: #37798b;
 }
 </style>

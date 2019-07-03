@@ -1,23 +1,27 @@
 <template>
   <div class="providers-container">    
     <div class="providers-toolbar">
-      <label for="create-provider">Providers: </label>
-      <input type="text" id="create-provider" v-model="provider.name" placeholder="Provider name">
-      <button v-on:click="addProvider()">Add Provider</button>
+      <label class="main" for="provider-name">Providers: </label>
+      <input class="main" type="text" id="provider-name" v-model="providerName" placeholder="Provider name">
+      <button id="provider-add-btn" @click="addProvider()">Add Provider</button>
     </div>  
-    <div class="providers-container">
+    <div class="providers">
       <div class="provider"
         v-for="(provider, index) in providers"
         v-bind:item="provider"
         v-bind:index="index"
         v-bind:key="provider._id"
       >
-        <input type="checkbox" id="provider-checked" v-on:change="toggleProvider(index)" v-bind:checked="provider.checked">
-        <input type="text" :readonly="provider.readonly" id="edit-providerName" v-model="provider.name" placeholder="Provider name">
-        <button :hidden="!provider.readonly" v-on:click="editProvider(index)">Edit</button>
-        <button :hidden="!provider.readonly" v-on:click="deleteProvider(index)">Delete</button>
-        <button :hidden="provider.readonly" v-on:click="saveProvider(index)">Save</button>
-        <button :hidden="provider.readonly" v-on:click="undoSaveProvider(index)">Cancel</button>
+        <input type="checkbox" id="provider-checked" @change="toggleProvider(index)" v-bind:checked="provider.checked">
+        <input type="text" :readonly="provider.readonly" id="edit-providerName" v-model="provider.newName" placeholder="Provider name">
+        <template v-if="provider.readonly">
+          <button id="provider-edit-btn" @click="editProvider(index)"/>
+          <button id="provider-delete-btn" @click="deleteProvider(index)"/>
+        </template>
+        <template v-else>
+          <button id="provider-save-btn" @click="saveProvider(index)"/>
+          <button id="provider-cancel-btn" @click="undoSaveProvider(index)"/>
+        </template>
       </div>
     </div>
   </div>
@@ -30,19 +34,27 @@ export default {
   name: 'ProvidersComponent',
   computed: {
     ...mapGetters({
-      providers: 'providersForClient'
-    }),
+      providers: 'providers'
+    })
+    /*,
     provider: { 
       get() { return this.$store.getters.provider; },
       set(value) { this.$store.commit('setProviderName', value) } 
     }
+    */
+  },
+  data () {
+    return {
+      providerName: ""
+    }
   },
   created() {
-    this.$store.commit('getProvidersForClient');
+    //this.$store.commit('getProviders');
   },
   methods: {
     addProvider() {
-      this.$store.commit('addProvider');
+      this.$store.commit('addProvider', this.$data.providerName);
+      this.$data.providerName = "";
     },
     deleteProvider(index) {
       this.$store.commit('deleteProvider', index);
@@ -65,18 +77,118 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+div.providers-toolbar {
+  display: inline-block;
 }
-ul {
-  list-style-type: none;
+#provider-add-btn {
+  border: 1px solid #ADADAD;
+  border-radius: 7px;
+  text-decoration: none; 
+  display: inline-block;
+  color: #4A4A4A;
+  background-color: #F7F5F6; 
+  background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+  width: 100px;
+  height: 30px;
+  margin-left:20px;
+}
+
+#provider-add-btn:hover {
+  border: 1px solid #ADADAD;
+  background-color: #E0E0E0; 
+  background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+}
+
+div.providers {  
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  width: 250px;
+  margin-left: 160px;
+}
+
+label.main {
+  margin-top: 7px;
+  font-weight:bold;
+  text-align:right;
+  width:150px;
+  float:left;
+}
+
+input.main {
+  float:left;
+  border:solid 1px #aacfe4;
+  width:230px;
+  margin:2px 0 10px 10px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -op-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  font-size: 14px;
+}
+ 
+input.main {
+  height: 18px;
+  padding: 4px 10px;
+}
+
+div.provider {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+  width: 100%''
+}
+
+.provider input {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.provider input:read-only {
+    border:solid 2px white;
+}
+
+#provider-edit-btn {
+  border: none;
+  background-size: cover;
+  background: url('./img/edit-icon.svg') no-repeat center;
+  width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  margin-right: 3px;
   padding: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+#provider-delete-btn {
+  border: none;
+  background-size: cover;
+  background: url('./img/trash-alt.svg') no-repeat center;
+  width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  margin-right: 3px;
+  padding: 0;
 }
-a {
-  color: #42b983;
+
+#provider-save-btn {
+  border: none;
+  background-size: cover;
+  background: url('./img/check-square.svg') no-repeat center;
+  width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  margin-right: 3px;
+  padding: 0;
 }
+
+#provider-cancel-btn {
+  border: none;
+  background-size: cover;
+  background: url('./img/window-close.svg') no-repeat center;
+  width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  margin-right: 3px;
+  padding: 0;
+}
+
 </style>
