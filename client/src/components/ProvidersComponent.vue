@@ -12,8 +12,8 @@
         v-bind:index="index"
         v-bind:key="provider._id"
       >
-        <input type="checkbox" id="provider-checked" @change="toggleProvider(index)" v-bind:checked="provider.checked">
-        <input type="text" :readonly="provider.readonly" id="edit-providerName" v-model="provider.newName" placeholder="Provider name">
+        <input type="checkbox" id="provider-checked" @change="toggleProvider(index)" v-bind:checked="provider.checked" />
+        <input type="text" :readonly="provider.readonly" id="edit-providerName" v-model="provider.newName" placeholder="Provider name" />
         <template v-if="provider.readonly">
           <button id="provider-edit-btn" @click="editProvider(index)"/>
           <button id="provider-delete-btn" @click="deleteProvider(index)"/>
@@ -53,6 +53,11 @@ export default {
   },
   methods: {
     addProvider() {
+      if (this.$data.providerName.length == 0) {
+        const message = "Fill provider name."
+        this.$store.commit('setError', message);
+        return false;
+      }
       this.$store.commit('addProvider', this.$data.providerName);
       this.$data.providerName = "";
     },
@@ -63,6 +68,11 @@ export default {
       this.$store.commit('editProvider', index);
     },
     saveProvider(index) {
+      if (this.providers[index].newName.length == 0) {
+        const message = "Fill provider name."
+        this.$store.commit('setError', message);
+        return false;
+      }
       this.$store.commit('saveProvider', index);
     },
     undoSaveProvider(index) {

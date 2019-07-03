@@ -11,7 +11,8 @@ class ProvidersService {
                 const data = res.data;
                 resolve(data.providers);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -24,7 +25,8 @@ class ProvidersService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -37,7 +39,8 @@ class ProvidersService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -50,7 +53,8 @@ class ProvidersService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -62,8 +66,9 @@ class ProvidersService {
                 const res = await axios.delete(`${url}${id}`);
                 const data = res.data;
                 resolve(data);
-            } catch(err) {                
-                reject(err);
+            } catch(err) {   
+                const { response } = err;
+                reject(response.data);
             }
         });
     }

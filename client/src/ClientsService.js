@@ -11,7 +11,8 @@ class ClientsService {
                 const data = res.data;
                 resolve(data.clients);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -29,7 +30,8 @@ class ClientsService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -42,7 +44,8 @@ class ClientsService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -60,7 +63,8 @@ class ClientsService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }
@@ -73,7 +77,8 @@ class ClientsService {
                 const data = res.data;
                 resolve(data);
             } catch(err) {
-                reject(err);
+                const { response } = err;
+                reject(response.data);
             }
         });
     }

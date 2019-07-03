@@ -251,17 +251,17 @@ router.delete("/:providerId", async (req, res, next) => {
                 res.status(500).json({ message: `Provider with ID ${id} is using in clients and can't be deleted` });
             } else {
                 Provider.deleteOne({ _id: id })
-                .exec()
-                .then(result => {
-                    if (result.deletedCount > 0) {
-                        res.status(200).json({ message: `Provider with ID ${id} is deleted` });
-                    } else {
-                        res.status(404).json({ message: `Provider with ID ${id} not found` });
-                    }
-                })
-                .catch(err => {
-                    res.status(500).json({ message: err.message });
-                });
+                    .exec()
+                    .then(result => {
+                        if (result.deletedCount > 0) {
+                            res.status(200).json({ message: `Provider with ID ${id} is deleted` });
+                        } else {
+                            res.status(404).json({ message: `Provider with ID ${id} not found` });
+                        }
+                    })
+                    .catch(err => {
+                        res.status(500).json({ message: err.message });
+                    });
             }
             
         })

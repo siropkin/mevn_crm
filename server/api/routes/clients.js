@@ -144,7 +144,7 @@
 *           email:
 *               type: string
 *           phone:
-*               type: integer
+*               type: string
 *           providers:
 *               type: array
 *               items:
@@ -214,7 +214,6 @@ router.post("/", async (req, res, next) => {
     await client
         .save()
         .then(result => {
-            //res.status(201).json({ message: `Client is created with ID ${result._id}` });
             res.status(201).json({ message: result._id });
         })
         .catch(err => {

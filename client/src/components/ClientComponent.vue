@@ -4,11 +4,11 @@
       <h3 v-else>Edit Client</h3>  
       <hr>
       <label class="main" for="client-name">Name:</label> 
-      <input class="main" type="text" id="client-name" v-model="client.name" placeholder="Name">
+      <input class="main" type="text" id="client-name" v-model="client.name" placeholder="Client name" />
       <label class="main" for="client-email">Email:</label> 
-      <input class="main" type="text" id="client-email" v-model="client.email" placeholder="client@email.com">
+      <input class="main" type="email" id="client-email" v-model="client.email" placeholder="client@email.com" />
       <label class="main" for="client-phone">Phone:</label> 
-      <input class="main" type="text" id="client-phone" v-model="client.phone" placeholder="305-555-0000">
+      <input class="main" type="tel" id="client-phone" v-model="client.phone" placeholder="000-000-0000" />
       <ProvidersComponent />
       <hr>
       <template v-if="client._id == -1">
@@ -39,6 +39,23 @@ export default {
   },
   methods: {
     addClient() {
+      let errorMessage = ""; 
+      // Name
+      if (this.client.name.length == 0) {
+        errorMessage = "Fill client name.";
+      }
+      // Email
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(this.client.email)) {
+        errorMessage = "Fill correct email.";
+      }
+      if (this.client.phone.length !== 10) {
+        errorMessage = "Fill correct phone number.";
+      }
+      if (errorMessage.length !== 0) {
+        this.$store.commit('setError', errorMessage);
+        return false;
+      }
       this.$store.commit('addClient');
     },
     deleteClient() {
@@ -47,6 +64,23 @@ export default {
       }
     },
     saveClient() {
+      let errorMessage = ""; 
+      // Name
+      if (this.client.name.length == 0) {
+        errorMessage = "Fill client name.";
+      }
+      // Email
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(this.client.email)) {
+        errorMessage = "Fill correct email.";
+      }
+      if (this.client.phone.length !== 10) {
+        errorMessage = "Fill correct phone number.";
+      }
+      if (errorMessage.length !== 0) {
+        this.$store.commit('setError', errorMessage);
+        return false;
+      }
       this.$store.commit('saveClient');
     },
     undoSaveClient() {

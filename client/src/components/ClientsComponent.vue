@@ -36,7 +36,7 @@
         >
           <td>{{ client.name }}</td>
           <td>{{ client.email }}</td>
-          <td>{{ client.phone.toString().replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') }}</td>
+          <td>{{ client.phone.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') }}</td>
           <td>
             <span class="provider-name"
               v-for="(id, index) in client.providers"

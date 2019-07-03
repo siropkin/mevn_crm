@@ -17,7 +17,7 @@ export const store = new Vuex.Store({
             _id: "",
             name: "",
             email: "",
-            phone: 0,
+            phone: "",
             providers: []
         },
         showClientCard: false,
@@ -53,6 +53,9 @@ export const store = new Vuex.Store({
         },
     },
     mutations: {
+        setError(state, message) {
+            state.error = message;           
+        },
         /*--- Providers ---*/
         async getProviders(state) {
             state.error = "";
@@ -68,7 +71,8 @@ export const store = new Vuex.Store({
                 }));
                 state.providersLoading = false;
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while gettings providers. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while gettings providers. Keep calm and try again later...";
+                //state.error = err.message;
                 state.providersLoading = false;
             }
         },
@@ -88,7 +92,8 @@ export const store = new Vuex.Store({
                 }
                 state.providers.push(provider);
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while creating provider. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while creating provider. Keep calm and try again later...";
+                //state.error = err.message;
             }
         },
         async deleteProvider(state, index) {
@@ -97,7 +102,8 @@ export const store = new Vuex.Store({
                 await ProvidersService.deleteProvider(state.providers[index]._id);
                 state.providers.splice(index, 1);
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while deleting provider. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while deleting provider. Keep calm and try again later...";
+                //state.error = err.message;
             }
         },
         editProvider(state, index) {
@@ -110,7 +116,8 @@ export const store = new Vuex.Store({
                 state.providers[index].name = state.providers[index].newName;
                 state.providers[index].readonly = true;                
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while saving provider. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while saving provider. Keep calm and try again later...";
+                //state.error = err.message;
             }
         },
         async undoSaveProvider(state, index) {
@@ -129,7 +136,8 @@ export const store = new Vuex.Store({
                 state.clients = await ClientsService.getClients();
                 state.clientsLoading = false;
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while gettings clients. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while gettings clients. Keep calm and try again later...";
+                //state.error = err.message;
                 state.clientsLoading = false;
             }
         },        
@@ -153,7 +161,8 @@ export const store = new Vuex.Store({
 
                 state.showClientCard = false;
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while creating client. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while creating client. Keep calm and try again later...";
+                //state.error = err.message;
                 state.showClientCard = true;
             }
         },
@@ -165,7 +174,8 @@ export const store = new Vuex.Store({
                 state.clients.splice(index, 1);
                 state.showClientCard = false;                
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while deleting client. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while deleting client. Keep calm and try again later...";
+                //state.error = err.message;
             }
         },        
         editClient(state, index) {
@@ -200,7 +210,7 @@ export const store = new Vuex.Store({
                 state.client._id = -1;
                 state.client.name = "";
                 state.client.email = "";
-                state.client.phone = 0;
+                state.client.phone = "";
                 state.client.providers = [];
 
                 state.providers = state.providers.map(provider => ({
@@ -213,7 +223,8 @@ export const store = new Vuex.Store({
     
                 state.showClientCard = true;     
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while creating client. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while creating client. Keep calm and try again later...";
+                //state.error = err.message;
             }
        
         },             
@@ -233,7 +244,8 @@ export const store = new Vuex.Store({
 
                 state.showClientCard = false;
             } catch(err) {
-                state.error = `Wooops! Something gone wrong while saving client. Keep calm and try again later... \n ERR:${err.message}`;
+                state.error = err.message || "Wooops! Something gone wrong while saving client. Keep calm and try again later...";
+                //state.error = err.message;
                 state.showClientCard = true; 
             }
         },
