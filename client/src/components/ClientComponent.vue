@@ -46,10 +46,10 @@ export default {
       }
       // Email
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (!re.test(this.client.email)) {
+      if (this.client.email.length !== 0 && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
-      if (this.client.phone.length !== 10) {
+      if (this.client.phone.length !== 0 && this.client.phone.length !== 10) {
         errorMessage = "Fill correct phone number.";
       }
       if (errorMessage.length !== 0) {
@@ -71,10 +71,10 @@ export default {
       }
       // Email
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (!re.test(this.client.email)) {
+      if (this.client.email.length !== 0 && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
-      if (this.client.phone.length !== 10) {
+      if (this.client.phone.length !== 0 && this.client.phone.length !== 10) {
         errorMessage = "Fill correct phone number.";
       }
       if (errorMessage.length !== 0) {
