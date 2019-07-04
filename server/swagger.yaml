@@ -1,0 +1,310 @@
+tags:
+  - name: providers
+    description: Access to Providers
+  - name: clients
+    description: Access to Clients
+paths:
+  /providers:
+      get:
+          tags:
+              - providers
+          summary: Get all Providers
+          produces:
+              - application/json
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/Providers'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+      post:
+          tags:
+              - providers
+          summary: Create Provider
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: body
+                name: body
+                description: Provider object that needs to be added
+                required: true
+                schema:
+                  $ref: "#/definitions/Provider"
+          responses:
+              '201':
+                  description: successful operation (in responses will be ID of new object)
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+  /providers/{providerId}:
+      get:
+          tags:
+              - providers
+          summary: Get Provider by ID
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: path
+                name: providerId
+                description: ID of provider to return
+                required: true
+                type: string
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/Provider'
+              '404':
+                  description: item with this ID not found
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+      patch:
+          tags:
+              - providers
+          summary: Update Provider by ID
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: path
+                name: providerId
+                description: ID of provider to update
+                required: true
+                type: string
+              - in: body
+                name: body
+                description: Provider object properties that needs to be updated
+                required: true
+                schema:
+                  $ref: "#/definitions/Provider"
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '404':
+                  description: item with this ID not found
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+      delete:
+          tags:
+              - providers
+          summary: Delete Provider by ID
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: path
+                name: providerId
+                description: ID of provider to delete
+                required: true
+                type: string
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '404':
+                  description: item with this ID not found
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+  /clients:
+      get:
+          tags:
+              - clients
+          summary: Get all Clients
+          produces:
+              - application/json
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/Clients'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+      post:
+          tags:
+              - clients
+          summary: Create Client
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: body
+                name: body
+                description: Client object that needs to be added
+                required: true
+                schema:
+                  $ref: "#/definitions/Client"
+          responses:
+              '201':
+                  description: successful operation (in responses will be ID of new object)
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+  /clients/{clientId}:
+      get:
+          tags:
+              - clients
+          summary: Get Client by ID
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: path
+                name: clientId
+                description: ID of client to return
+                required: true
+                type: string
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/Client'
+              '404':
+                  description: item with this ID not found
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+      patch:
+          tags:
+              - clients
+          summary: Update Client by ID
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: path
+                name: clientId
+                description: ID of client to update
+                required: true
+                type: string
+              - in: body
+                name: body
+                description: Client object properties that needs to be updated
+                required: true
+                schema:
+                  $ref: "#/definitions/Client"
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '404':
+                  description: item with this ID not found
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+      delete:
+          tags:
+              - clients
+          summary: Delete Client by ID
+          consumes:
+              - application/json
+          produces:
+              - application/json
+          parameters:
+              - in: path
+                name: clientId
+                description: ID of client to delete
+                required: true
+                type: string
+          responses:
+              '200':
+                  description: successful operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '404':
+                  description: item with this ID not found
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+              '500':
+                  description: error using this operation
+                  schema:
+                      $ref: '#/definitions/ApiResponse'
+definitions:
+  Provider:
+      type: object
+      properties:
+          _id:
+              type: string
+              readOnly: true
+          name:
+              type: string
+      required:
+          - name               
+  Providers:
+      type: object
+      properties:
+          providers:
+              type: array
+              items:
+                  $ref: '#/definitions/Provider'      
+  Client:
+      type: object
+      properties:
+          _id:
+              type: string
+              readOnly: true
+          name:
+              type: string
+          email:
+              type: string
+          phone:
+              type: string
+          providers:
+              type: array
+              items:
+                  type: string
+      required:
+          - name               
+  Clients:
+      type: object
+      properties:
+          clients:
+              type: array
+              items:
+                  $ref: '#/definitions/Client'
+  ApiResponse:
+      type: object
+      properties:
+          message:
+              type: string

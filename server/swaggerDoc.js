@@ -10,7 +10,8 @@ const options = {
         },
         basePath: '/api',    
     },
-    apis: ['./server/api/routes/providers.js', './server/api/routes/clients.js'],
+    //apis: ['./server/api/routes/providers.js', './server/api/routes/clients.js'],
+    apis: ['./server/swagger.yaml']
 };
 
 const specs = swaggerJsdoc(options);

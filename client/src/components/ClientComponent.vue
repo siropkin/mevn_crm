@@ -62,15 +62,15 @@ export default {
       if (this.client.email && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
-      this.client.phone = this.client.phone.replace(/-/g, "");
-      if (this.client.phone && this.client.phone.length !== 10) {
-        console.log(this.client.phone);
+      const phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
+      if (phone && phone.length !== 10) {
         errorMessage = "Fill correct phone number.";
       }
       if (errorMessage) {
         this.$store.commit('setError', errorMessage);
         return false;
       }
+      this.client.phone = phone;
       this.$store.commit('addClient');
     },
     deleteClient() {
@@ -89,15 +89,15 @@ export default {
       if (this.client.email && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
-      this.client.phone = this.client.phone.replace(/-/g, "");
-      if (this.client.phone && this.client.phone.length !== 10) {
-        console.log(this.client.phone);
+      const phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
+      if (phone && phone.length !== 10) {
         errorMessage = "Fill correct phone number.";
       }
       if (errorMessage) {
         this.$store.commit('setError', errorMessage);
         return false;
       }
+      this.client.phone = phone;
       this.$store.commit('saveClient');
     },
     undoSaveClient() {

@@ -5,7 +5,7 @@ const clientSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: { type: String, required: true },
     email: { type: mongoose.SchemaTypes.Email, allowBlank: true },
-    phone: String,    
+    phone: String,
     providers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Provider' }]
 });
 
