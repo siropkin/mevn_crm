@@ -8,7 +8,7 @@
       <label class="main" for="client-email">Email:</label> 
       <input class="main" type="email" id="client-email" v-model="client.email" placeholder="client@email.com" />
       <label class="main" for="client-phone">Phone:</label> 
-      <input class="main" type="tel" id="client-phone" v-model="client.phone" placeholder="000-000-0000" />
+      <input class="main" type="tel" id="client-phone" v-model="client.phone" placeholder="999-999-9999" />
       <ProvidersComponent />
       <hr>
       <template v-if="client._id == -1">
@@ -26,16 +26,29 @@
 <script>
 import ProvidersComponent from './ProvidersComponent.vue'
 import { mapGetters } from 'vuex';
+import Inputmask from 'inputmask';
 
 export default {
   name: 'ClientComponent',
   components: {
     ProvidersComponent
   },
+  /*directives: {
+    'input-mask': {
+      bind: function(el) {
+		    new Inputmask().mask(el);
+	  },
+    }
+  },*/
+  mounted () {
+    // ... используем
+    var im = new Inputmask("999-999-9999");
+    im.mask(document.getElementById('client-phone'));
+  },
   computed: {
     ...mapGetters({
       client: 'client'
-    }),
+    })
   },
   methods: {
     addClient() {
@@ -49,7 +62,9 @@ export default {
       if (this.client.email && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
+      this.client.phone = this.client.phone.replace(/-/g, "");
       if (this.client.phone && this.client.phone.length !== 10) {
+        console.log(this.client.phone);
         errorMessage = "Fill correct phone number.";
       }
       if (errorMessage) {
@@ -74,7 +89,9 @@ export default {
       if (this.client.email && !re.test(this.client.email)) {
         errorMessage = "Fill correct email.";
       }
+      this.client.phone = this.client.phone.replace(/-/g, "");
       if (this.client.phone && this.client.phone.length !== 10) {
+        console.log(this.client.phone);
         errorMessage = "Fill correct phone number.";
       }
       if (errorMessage) {
