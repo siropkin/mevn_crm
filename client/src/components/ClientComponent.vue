@@ -33,16 +33,8 @@ export default {
   components: {
     ProvidersComponent
   },
-  /*directives: {
-    'input-mask': {
-      bind: function(el) {
-		    new Inputmask().mask(el);
-	  },
-    }
-  },*/
   mounted () {
-    // ... используем
-    var im = new Inputmask("999-999-9999");
+    const im = new Inputmask("999-999-9999");
     im.mask(document.getElementById('client-phone'));
   },
   computed: {
@@ -50,27 +42,40 @@ export default {
       client: 'client'
     })
   },
+  data () {
+    return {
+      formError: ""
+    }
+  },
   methods: {
-    addClient() {
-      let errorMessage = ""; 
+    formValidate() {
+      this.$data.formError = "";
       // Name
       if (!this.client.name) {
-        errorMessage = "Fill client name.";
+        this.$data.formError = "Fill client name.";
       }
       // Email
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (this.client.email && !re.test(this.client.email)) {
-        errorMessage = "Fill correct email.";
+      const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (this.client.email && !reEmail.test(this.client.email)) {
+        this.$data.formError = "Fill correct email.";
       }
+      // Phone
       const phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
-      if (phone && phone.length !== 10) {
-        errorMessage = "Fill correct phone number.";
-      }
-      if (errorMessage) {
-        this.$store.commit('setError', errorMessage);
+      const rePhone = /\d{10}/
+      if (phone && !rePhone.test(phone)) {
+        this.$data.formError = "Fill correct phone number.";
+      }      
+    },
+    addClient() {      
+      this.formValidate();
+
+      if (this.$data.formError) {
+        this.$store.commit('setError', this.$data.formError);
         return false;
       }
-      this.client.phone = phone;
+      
+      this.client.name = this.client.name.trim();
+      this.client.phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
       this.$store.commit('addClient');
     },
     deleteClient() {
@@ -79,25 +84,15 @@ export default {
       }
     },
     saveClient() {
-      let errorMessage = ""; 
-      // Name
-      if (!this.client.name) {
-        errorMessage = "Fill client name.";
-      }
-      // Email
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (this.client.email && !re.test(this.client.email)) {
-        errorMessage = "Fill correct email.";
-      }
-      const phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
-      if (phone && phone.length !== 10) {
-        errorMessage = "Fill correct phone number.";
-      }
-      if (errorMessage) {
-        this.$store.commit('setError', errorMessage);
+      this.formValidate();
+
+      if (this.$data.formError) {
+        this.$store.commit('setError', this.$data.formError);
         return false;
       }
-      this.client.phone = phone;
+      
+      this.client.name = this.client.name.trim();
+      this.client.phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
       this.$store.commit('saveClient');
     },
     undoSaveClient() {

@@ -60,7 +60,6 @@ router.get("/:clientId", async (req, res, next) => {
 
 // Update Client by ID
 router.patch("/:clientId", async (req, res, next) => {
-    // TODO: Catch if there is equals providerId
     const errors = [];
 
     const id = req.params.clientId;

@@ -5,7 +5,7 @@
       <input class="main" type="text" id="provider-name" v-model="providerName" placeholder="Provider name">
       <button id="provider-add-btn" @click="addProvider()">Add Provider</button>
     </div>  
-    <div class="providers">
+    <div class="providers" v-if="providers.length !== 0">
       <div class="provider"
         v-for="(provider, index) in providers"
         v-bind:item="provider"
@@ -58,7 +58,7 @@ export default {
         this.$store.commit('setError', message);
         return false;
       }
-      this.$store.commit('addProvider', this.$data.providerName);
+      this.$store.commit('addProvider', this.$data.providerName.trim());
       this.$data.providerName = "";
     },
     deleteProvider(index) {
