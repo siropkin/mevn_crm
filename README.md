@@ -18,6 +18,8 @@ npm run serve
 # Build for production (Will build into server/public, ready for deployment)
 cd client
 npm run build
+
+# Swagger url Vue DevServer: http://localhost:5000/api-docs
 ```
 
 ## App Info
