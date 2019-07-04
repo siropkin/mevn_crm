@@ -41,7 +41,7 @@ export default {
     addClient() {
       let errorMessage = ""; 
       // Name
-      if (!this.client.name.length) {
+      if (!this.client.name) {
         errorMessage = "Fill client name.";
       }
       // Email
