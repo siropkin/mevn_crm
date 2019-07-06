@@ -2,12 +2,11 @@ const mongoose = require('mongoose');
 require('mongoose-type-email');
 const uniqueValidator = require('mongoose-unique-validator');
 
-// TODO: Catch if there is equals providerId
 const clientSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: { 
         type: String, 
-        required: [true, 'Client name required'], 
+        required: [true, 'Client name required.'], 
         trim: true,
         unique: true
     },
@@ -22,7 +21,7 @@ const clientSchema = mongoose.Schema({
                 if (v) { return /\d{10}/.test(v); }
                 return true;
             },
-            message: props => `${props.value} is not a valid phone number!`
+            message: props => `${props.value} is not a valid phone number.`
         }
     },
     providers: [{ 
@@ -31,6 +30,6 @@ const clientSchema = mongoose.Schema({
     }]
 });
 
-clientSchema.plugin(uniqueValidator);
+clientSchema.plugin(uniqueValidator, { message: 'Client with this name already exists.' });
 
 module.exports = mongoose.model('Client', clientSchema);

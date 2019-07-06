@@ -1,18 +1,24 @@
 <template>
   <div class="providers-container">    
     <div class="providers-toolbar">
-      <label class="main" for="provider-name">Providers: </label>
-      <input class="main" type="text" id="provider-name" v-model="providerName" placeholder="Provider name">
+      <label class="main" for="provider-name">Providers:</label>
+      <input class="main" type="text" id="provider-name" v-model="newProvider.name" placeholder="Provider name">
       <button id="provider-add-btn" @click="addProvider()">Add Provider</button>
     </div>  
-    <div class="providers" v-if="providers.length !== 0">
-      <div class="provider"
+    <div class="providers">
+      <div class="no-data" v-if="providers.length == 0"> 
+          <div style="display: inline-block">
+            No data for providers.
+            <button id="refresh-btn" @click="refreshData">Refresh</button>
+          </div>
+      </div>
+      <div v-else class="provider"
         v-for="(provider, index) in providers"
         v-bind:item="provider"
         v-bind:index="index"
         v-bind:key="provider._id"
       >
-        <input type="checkbox" id="provider-checked" @change="toggleProvider(index)" v-bind:checked="provider.checked" />
+        <input type="checkbox" id="provider-checked" @change="checkProvider(index)" v-bind:checked="provider.checked" />
         <input type="text" :readonly="provider.readonly" id="edit-providerName" v-model="provider.newName" placeholder="Provider name" />
         <template v-if="provider.readonly">
           <button id="provider-edit-btn" @click="editProvider(index)"/>
@@ -34,52 +40,75 @@ export default {
   name: 'ProvidersComponent',
   computed: {
     ...mapGetters({
-      providers: 'providers'
+      providers: 'PROVIDERS',
+      newProvider: 'NEW_PROVIDER'
     })
-    /*,
-    provider: { 
-      get() { return this.$store.getters.provider; },
-      set(value) { this.$store.commit('setProviderName', value) } 
-    }
-    */
   },
   data () {
     return {
-      providerName: ""
+      formError: ""
     }
   },
   created() {
-    //this.$store.commit('getProviders');
+    //this.$store.dispatch('SET_PROVIDERS');
   },
   methods: {
-    addProvider() {
-      if (this.$data.providerName.length == 0) {
-        const message = "Fill provider name."
-        this.$store.commit('setError', message);
-        return false;
+    validateAddForm() {
+      this.$data.formError = "";
+      // Name
+      const newProviderName = this.newProvider.name.trim();
+      if (!newProviderName) {
+        this.$data.formError = "Fill provider name.";
       }
-      this.$store.commit('addProvider', this.$data.providerName.trim());
-      this.$data.providerName = "";
+    },
+    validateEditForm(index) {
+      this.$data.formError = "";
+      // Name
+      const newProviderName = this.providers[index].newName.trim();
+      if (!newProviderName) {
+        this.$data.formError = "Fill provider name.";
+      }
+    },
+    refreshData() {
+      this.$store.dispatch('SET_ERROR', "");
+      this.$store.dispatch('SET_PROVIDERS');
+    },
+    addProvider() {
+      this.$store.dispatch('SET_ERROR', "");
+      this.validateAddForm();
+      if (!this.$data.formError) {
+        if (this.providers.length == 0) {
+          this.$store.dispatch('SET_PROVIDERS');
+        }
+        this.$store.dispatch('ADD_PROVIDER');
+      }
+      else {
+        this.$store.dispatch('SET_ERROR', this.$data.formError);
+      }
     },
     deleteProvider(index) {
-      this.$store.commit('deleteProvider', index);
+      this.$store.dispatch('SET_ERROR', "");
+      this.$store.dispatch('DEL_PROVIDER', index);
     },
     editProvider(index) {
-      this.$store.commit('editProvider', index);
+      this.$store.dispatch('TOGGLE_PROVIDER_READONLY', index);
+    },
+    checkProvider(index) {
+      this.$store.dispatch('TOGGLE_PROVIDER_CHECKED', index);
     },
     saveProvider(index) {
-      if (this.providers[index].newName.length == 0) {
-        const message = "Fill provider name."
-        this.$store.commit('setError', message);
-        return false;
+      this.$store.dispatch('SET_ERROR', "");
+      this.validateEditForm(index);
+      if (!this.$data.formError) {
+        this.$store.dispatch('SAVE_PROVIDER', index);
       }
-      this.$store.commit('saveProvider', index);
+      else {
+        this.$store.dispatch('SET_ERROR', this.$data.formError);
+      }
     },
     undoSaveProvider(index) {
-      this.$store.commit('undoSaveProvider', index);
-    },
-    toggleProvider(index) {
-      this.$store.commit('toggleProvider', index);
+      this.$store.dispatch('SET_ERROR', "");
+      this.$store.dispatch('UNDO_SAVE_PROVIDER', index);
     }
   }
 }
@@ -199,5 +228,26 @@ div.provider {
   margin-left: 3px;
   margin-right: 3px;
   padding: 0;
+}
+
+#refresh-btn, #refresh-btn:hover, #refresh-btn:after, #refresh-btn:focus {
+  clear: both;
+  text-align: center;
+  color: gray;
+  text-decoration: underline;
+  border: none;
+  box-shadow: none;
+  background: none;
+  outline: 0;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 100%;
+  padding: 0;
+}
+
+div.no-data {
+  text-align: center;
+  padding: 16px;
+  color: gray
 }
 </style>

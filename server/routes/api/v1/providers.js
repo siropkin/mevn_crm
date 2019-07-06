@@ -32,7 +32,7 @@ router.get("/:providerId", async (req, res, next) => {
         if (result) {
             res.status(200).json(result);
         } else {
-            res.status(404).json({ message: `Provider with ID ${id} not found` });
+            res.status(404).json({ message: `Provider with ID ${id} not found.` });
         }        
     } catch(err) {
         res.status(500).json({ message: err.message });
@@ -45,10 +45,10 @@ router.patch("/:providerId", async (req, res, next) => {
     const name = req.body.name;
     try {
         const result = await Providers.updateProvider(id, name);
-        if (result.n > 0) {
-            res.status(200).json({ message: `Provider with ID ${id} is updated` });
+        if (result) {
+            res.status(200).json({ message: `Provider with ID ${id} is updated.` });
         } else {
-            res.status(404).json({ message: `Provider with ID ${id} not found` });
+            res.status(404).json({ message: `Provider with ID ${id} not found.` });
         }
     } catch(err) {
         res.status(500).json({ message: err.message });
@@ -63,12 +63,12 @@ router.delete("/:providerId", async (req, res, next) => {
         if (clients.length == 0) {
             const result = await Providers.deleteProvider(id);
             if (result.deletedCount > 0) {
-                res.status(200).json({ message: `Provider with ID ${id} is deleted` });
+                res.status(200).json({ message: `Provider with ID ${id} is deleted.` });
             } else {
-                res.status(404).json({ message: `Provider with ID ${id} not found` });
+                res.status(404).json({ message: `Provider with ID ${id} not found.` });
             }
         } else {
-            res.status(500).json({ message: `Provider with ID ${id} is using in clients and can't be deleted` });
+            res.status(500).json({ message: `Provider with ID ${id} is using in clients and can't be deleted.` });
         }
     } catch(err) {
         res.status(500).json({ message: err.message });

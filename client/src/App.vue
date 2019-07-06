@@ -16,7 +16,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      error: 'error'
+      error: 'ERROR'
     })
   }
 }
@@ -28,7 +28,7 @@ export default {
 }
 
 #app-error {  
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 37%;
   width: 26%;

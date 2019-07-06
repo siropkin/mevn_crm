@@ -1,22 +1,22 @@
 <template>
   <div class="client-container">    
-      <h3 v-if="client._id == -1">New Client</h3>  
+      <h3 v-if="newClient._id == -1">New Client</h3>  
       <h3 v-else>Edit Client</h3>  
       <hr>
       <label class="main" for="client-name">Name:</label> 
-      <input class="main" type="text" id="client-name" v-model="client.name" placeholder="Client name" />
+      <input class="main" type="text" id="client-name" v-model="newClient.name" placeholder="Client name" />
       <label class="main" for="client-email">Email:</label> 
-      <input class="main" type="email" id="client-email" v-model="client.email" placeholder="client@email.com" />
+      <input class="main" type="email" id="client-email" v-model="newClient.email" placeholder="client@email.com" />
       <label class="main" for="client-phone">Phone:</label> 
-      <input class="main" type="tel" id="client-phone" v-model="client.phone" placeholder="999-999-9999" />
+      <input class="main" type="tel" id="client-phone" v-model="newClient.phone" placeholder="999-999-9999" />
       <ProvidersComponent />
       <hr>
-      <template v-if="client._id == -1">
+      <template v-if="newClient._id == -1">
         <button id="client-cancel-btn" @click="undoSaveClient()">Cancel</button>
-        <button id="client-add-btn" @click="addClient()">Add Client</button>
+        <button id="client-add-btn" @click="saveClient()">Add Client</button>
       </template>
       <template v-else>
-        <button id="client-delete-btn" @click="deleteClient()">Delete Client</button>
+        <button id="client-delete-btn" @click="deleteClient(newClient._id)">Delete Client</button>
         <button id="client-cancel-btn" @click="undoSaveClient()">Cancel</button>
         <button id="client-save-btn" @click="saveClient()">Save Client</button>
       </template>
@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      client: 'client'
+      newClient: 'NEW_CLIENT'
     })
   },
   data () {
@@ -48,55 +48,48 @@ export default {
     }
   },
   methods: {
-    formValidate() {
+    validateForm() {
       this.$data.formError = "";
       // Name
-      if (!this.client.name) {
+      const newClientName = this.newClient.name.trim();
+      if (!newClientName) {
         this.$data.formError = "Fill client name.";
       }
       // Email
       const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (this.client.email && !reEmail.test(this.client.email)) {
+      if (this.newClient.email && !reEmail.test(this.newClient.email)) {
         this.$data.formError = "Fill correct email.";
       }
       // Phone
-      const phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
+      const phone = this.newClient.phone.replace(/-/g, "").replace(/_/g, "");
       const rePhone = /\d{10}/
       if (phone && !rePhone.test(phone)) {
         this.$data.formError = "Fill correct phone number.";
       }      
     },
-    addClient() {      
-      this.formValidate();
+    deleteClient(id) {
+      this.$store.dispatch('SET_ERROR', "");
 
-      if (this.$data.formError) {
-        this.$store.commit('setError', this.$data.formError);
-        return false;
-      }
-      
-      this.client.name = this.client.name.trim();
-      this.client.phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
-      this.$store.commit('addClient');
-    },
-    deleteClient() {
       if(confirm("Do you really want to delete?")) {
-        this.$store.commit('deleteClient');
+        this.$store.dispatch('DEL_CLIENT', id);
       }
     },
     saveClient() {
-      this.formValidate();
+      this.$store.dispatch('SET_ERROR', "");
 
-      if (this.$data.formError) {
-        this.$store.commit('setError', this.$data.formError);
-        return false;
+      this.validateForm();
+      if (!this.$data.formError) {
+        this.$store.dispatch('SAVE_NEW_CLIENT');
       }
-      
-      this.client.name = this.client.name.trim();
-      this.client.phone = this.client.phone.replace(/-/g, "").replace(/_/g, "");
-      this.$store.commit('saveClient');
+      else {
+        this.$store.dispatch('SET_ERROR', this.$data.formError);
+      }
     },
     undoSaveClient() {
-      this.$store.commit('undoSaveClient');
+      this.$store.dispatch('SET_ERROR', "");
+      this.$store.dispatch('SET_NEW_CLIENT', -1);
+      this.$store.dispatch('SET_PROVIDERS_STATUS_FOR_NEW_CLIENT');
+      this.$store.dispatch('SET_NEW_CLIENT_HIDDEN', true);
     }
   }
 }

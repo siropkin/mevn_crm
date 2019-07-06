@@ -3,6 +3,10 @@ const router = require("express").Router();
 const Providers = require("../../../services/providers");
 const Clients = require("../../../services/clients");
 
+const getUnique = (arr) => {
+    return arr.filter((v, i, arr) => arr.indexOf(v) === i);
+}
+
 // Get all Clients
 router.get("/", async (req, res, next) => {
     try {
@@ -15,19 +19,23 @@ router.get("/", async (req, res, next) => {
 
 // Create Client
 router.post("/", async (req, res, next) => {
-    // TODO: Catch if there is equals providerId
     const errors = [];
 
     const name = req.body.name;
     const email = req.body.email;
     const phone = req.body.phone;
-    const providers = req.body.providers;
+    let providers = req.body.providers;
 
-    if (providers) {
+    if (providers) {        
+        try {
+            providers = await getUnique(providers);
+        } catch (error) {
+            errors.push(error.message);
+        }
         for (const id of providers) {
             const result = await Providers.getProvider(id);
             if (!result) {
-                errors.push(`Provider with ID ${id} not found`);
+                errors.push(`Provider with ID ${id} not found.`);
             }
         }
     }  
@@ -39,7 +47,7 @@ router.post("/", async (req, res, next) => {
             res.status(500).json({ message: err.message });
         }
     } else {
-        res.status(404).json({ message: JSON.stringify(errors) });
+        res.status(500).json({ message: JSON.stringify(errors) });
     }
 });
 
@@ -51,7 +59,7 @@ router.get("/:clientId", async (req, res, next) => {
         if (result) {
             res.status(200).json(result);
         } else {
-            res.status(404).json({ message: `Client with ID ${id} not found` });
+            res.status(404).json({ message: `Client with ID ${id} not found.` });
         }        
     } catch(err) {
         res.status(500).json({ message: err.message });
@@ -66,29 +74,34 @@ router.patch("/:clientId", async (req, res, next) => {
     const name = req.body.name;
     const email = req.body.email;
     const phone = req.body.phone;
-    const providers = req.body.providers;
+    let providers = req.body.providers;
     
-    if (providers) {
+    if (providers) {        
+        try {
+            providers = await getUnique(providers);
+        } catch (error) {
+            errors.push(error.message);
+        }
         for (const id of providers) {
             const result = await Providers.getProvider(id);
             if (!result) {
-                errors.push(`Provider with ID ${id} not found`);
+                errors.push(`Provider with ID ${id} not found.`);
             }
         }
     }
     if (errors.length == 0) {
         try {
             const result = await Clients.updateClient(id, name, email, phone, providers);
-            if (result.n > 0) {
-                res.status(200).json({ message: `Client with ID ${id} is updated` });
+            if (result) {
+                res.status(200).json({ message: `Client with ID ${id} is updated.` });
             } else {
-                res.status(404).json({ message: `Client with ID ${id} not found` });
+                res.status(404).json({ message: `Client with ID ${id} not found.` });
             }
         } catch(err) {
             res.status(500).json({ message: err.message });
         }
     } else {
-        res.status(404).json({ message: JSON.stringify(errors) });
+        res.status(500).json({ message: JSON.stringify(errors) });
     }
 });
 
@@ -98,9 +111,9 @@ router.delete("/:clientId", async (req, res, next) => {
     try {
         const result = await Clients.deleteClient(id);
         if (result.deletedCount > 0) {
-            res.status(200).json({ message: `Client with ID ${id} is deleted` });
+            res.status(200).json({ message: `Client with ID ${id} is deleted.` });
         } else {
-            res.status(404).json({ message: `Client with ID ${id} not found` });
+            res.status(404).json({ message: `Client with ID ${id} not found.` });
         }
     } catch(err) {
         res.status(500).json({ message: err.message });

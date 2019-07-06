@@ -2,7 +2,7 @@
   <div class="clients-container">
     <div class="clients-toolbar">
       <h2>Clients</h2>
-      <button id="client-create-btn" @click="createClient()">New Client</button>
+      <button id="client-create-btn" @click="createNewClient()">New Client</button>
     </div>
     <table class="clients-list">
       <thead>
@@ -15,7 +15,7 @@
         </tr>
       </thead>      
       <tbody>
-        <tr class="preloader" v-if="clientsLoading || providersLoading"> 
+        <tr class="preloader" v-if="providersIsLoading || clientsIsLoading"> 
           <td colspan="5">
             <div id="preloader"></div>
           </td>
@@ -23,7 +23,7 @@
         <tr class="no-data" v-else-if="clients.length == 0"> 
           <td colspan="5">
             <div style="display: inline-block">
-              No data.
+              No data for clients.
               <button id="refresh-btn" @click="refreshData">Refresh</button>
             </div>            
           </td>
@@ -36,12 +36,12 @@
         >
           <td>{{ client.name }}</td>
           <td>{{ client.email }}</td>
-          <td>{{ client.phone.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') }}</td>
+          <td>{{ formatPhoneNumber(client.phone) }}</td>
           <td>
             <span class="provider-name"
               v-for="(id, index) in client.providers"
               v-bind:key="index"
-            >{{ providerNameById(id) }}</span>
+            >{{ getProviderNameById(id) }}</span>
           </td>
           <td>
             <button id="client-edit-btn" @click="editClient(index)">Edit</button>
@@ -49,7 +49,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="client-card" v-if="showClientCard">
+    <div class="client-card" v-if="!newClientHidden">
       <ClientComponent />
     </div>
   </div>
@@ -66,29 +66,50 @@ export default {
   },
   computed: {
     ...mapGetters({
-      clientsLoading: 'clientsLoading',
-      providersLoading: 'providersLoading',
-      clients: 'clients',
-      providers: 'providers',
-      providerNameById: 'providerNameById',
-      showClientCard: 'showClientCard'      
+      providersIsLoading: 'PROVIDERS_IS_LOADING',
+      providers: 'PROVIDERS',
+      clientsIsLoading: 'CLIENTS_IS_LOADING',      
+      clients: 'CLIENTS',      
+      newClientHidden: 'NEW_CLIENT_HIDDEN'      
     })    
   },
   created() {
-    this.$store.commit('getProviders');
-    this.$store.commit('getClients');
+    this.$store.dispatch('SET_ERROR', "");
+    this.$store.dispatch('SET_PROVIDERS');
+    this.$store.dispatch('SET_CLIENTS');
   },
   methods: {
     refreshData() {
-      this.$store.commit('getProviders');
-      this.$store.commit('getClients');
+      this.$store.dispatch('SET_ERROR', "");
+      this.$store.dispatch('SET_PROVIDERS');
+      this.$store.dispatch('SET_CLIENTS');
     },
-    createClient() {
-      this.$store.commit('createClient');
+    createNewClient() {
+      this.$store.dispatch('SET_ERROR', "");
+      if (this.providers.length == 0) {
+          this.$store.dispatch('SET_PROVIDERS');
+      }
+      if (this.clients.length == 0) {
+        this.$store.dispatch('SET_CLIENTS');
+      }
+      this.$store.dispatch('SET_NEW_CLIENT', -1);
+      this.$store.dispatch('SET_PROVIDERS_STATUS_FOR_NEW_CLIENT');
+      this.$store.dispatch('SET_NEW_CLIENT_HIDDEN', false);
     },
     editClient(index) {
-      this.$store.commit('editClient', index);
-    }
+      this.$store.dispatch('SET_ERROR', "");
+      this.$store.dispatch('SET_NEW_CLIENT', index);
+      this.$store.dispatch('SET_PROVIDERS_STATUS_FOR_NEW_CLIENT');
+      this.$store.dispatch('SET_NEW_CLIENT_HIDDEN', false);
+    },
+    formatPhoneNumber(phoneNumber) {
+      return phoneNumber.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+    },
+    getProviderNameById(providerId) {
+      const provider = this.providers.find((provider) => { return provider._id === providerId  });
+      if (provider) { return provider.name }
+      return providerId;
+    },
   }
 }
 </script>
@@ -109,7 +130,7 @@ div.clients-toolbar {
 }
 
 div.client-card {  
-  position: absolute;
+  position: fixed;
   top: 10px;
   left: calc(50% - 640px/2);
   width: 640px;

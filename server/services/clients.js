@@ -26,13 +26,16 @@ module.exports = {
         return Client.findById(id).select('_id name email phone providers').exec();
     },         
     // Update Client by ID
-    updateClient: (id, name, email, phone, providers) => {
-        return Client.updateOne({ _id: id }, { $set: { 
+    updateClient: async (id, name, email, phone, providers) => {
+        const client = await Client.findById(id).select('_id name').exec();
+        if (!client) { return null; } 
+        client.set({ 
             name,
             email,
             phone,
             providers
-        } });
+        });
+        return client.save();
     },
     // Delete Client by ID
     deleteClient: (id) => {

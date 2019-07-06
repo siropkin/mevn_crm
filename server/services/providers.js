@@ -19,10 +19,11 @@ module.exports = {
         return Provider.findById(id).select('_id name').exec();
     },    
     // Update Provider by ID
-    updateProvider: (id, name) => {
-        return Provider.updateOne({ _id: id }, { $set: { 
-            name
-        } });
+    updateProvider: async (id, name) => {
+        const provider = await Provider.findById(id).select('_id name').exec(); 
+        if (!provider) { return null; }  
+        provider.set({ name });
+        return provider.save();  
     },
     // Delete Provider by ID
     deleteProvider: (id) => {
