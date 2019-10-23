@@ -1,6 +1,7 @@
 # Simple CRM
 
-> Example of a fullstack app using Vue.js, Express and MongoDB. You will need to edit the MongoDB connection string in server/app.js to your own.
+> Example of a fullstack app using MongoDB, Express, Vue.js 2, Node.js (MEVN) and Swagger. 
+You will need to edit the MongoDB connection string in server/app.js to your own.
 
 ## Quick Start
 
