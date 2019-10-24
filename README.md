@@ -1,6 +1,6 @@
 # Simple MEVN CRM Example
 
-![Screenshot](mevn-crm-demo.png)
+![Demo screenshot](mevn-crm-demo.png)
 
 Example of a fullstack app using MongoDB, Express, Vue.js 2, Node.js (MEVN) and Swagger.
 
