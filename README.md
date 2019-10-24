@@ -1,11 +1,13 @@
 # Simple CRM
 
-> Example of a fullstack app using MongoDB, Express, Vue.js 2, Node.js (MEVN) and Swagger. 
+> Example of a fullstack app using MongoDB, Express, Vue.js 2, Node.js (MEVN) and Swagger.
+Ready to deploy on Heroku
 You will need to edit the MongoDB connection string in server/app.js to your own.
 
-Demo: https://mevn-crm.herokuapp.com/
 
-Swagger: https://mevn-crm.herokuapp.com/api-docs
+>Demo: https://mevn-crm.herokuapp.com/
+
+>Swagger: https://mevn-crm.herokuapp.com/api-docs
 
 ## Quick Start
 
@@ -27,8 +29,6 @@ npm run build
 # Swagger url Vue DevServer: http://localhost:5000/api-docs
 ```
 
-## App Info
-
-### Author
+## Author
 
 [Ivan Seredkin](https://www.facebook.com/ivan.seredkin)
